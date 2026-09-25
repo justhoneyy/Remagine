@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Stop Trusting One AI. Ask Them All</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            display: ['"Plus Jakarta Sans"', 'sans-serif']
+          },
+          colors: {
+            brandPink: '#FBAEBE',
+            brandPinkHover: '#f89ab0',
+            brandBlue: '#3B82F6',
+            brandMint: '#A7F3D0',
+            brandCoral: '#FF5C5C',
+            brandYellow: '#FCD34D'
+          }
+        }
+      }
+    };
+</script>
+<style>
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: #ffffff;
+      color: #111827;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    .crisp-border { border: 2px solid #111827; }
+    .crisp-border-thick { border: 2.5px solid #111827; }
+
+    /* ---------- focus visibility ---------- */
+    a:focus-visible, button:focus-visible, input:focus-visible {
+      outline: 2.5px solid #111827;
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+
+    /* ---------- entrance sequence (hero illustration, plays once on load) ---------- */
+    .enter-piece {
+      opacity: 0;
+      transform: translateY(14px) scale(0.96);
+      animation: pieceIn 0.7s cubic-bezier(.21,.9,.32,1) forwards;
+    }
+    @keyframes pieceIn {
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .enter-1 { animation-delay: .05s; }
+    .enter-2 { animation-delay: .15s; }
+    .enter-3 { animation-delay: .25s; }
+    .enter-4 { animation-delay: .35s; }
+    .enter-5 { animation-delay: .45s; }
+    .enter-6 { animation-delay: .2s; }
+    .enter-7 { animation-delay: .3s; }
+    .enter-8 { animation-delay: .4s; }
+    .enter-9 { animation-delay: .5s; }
+    .enter-10 { animation-delay: .55s; }
+
+    /* ---------- gentle ambient motion, subtle & slow ---------- */
+    .float-slow { animation: floatY 5.5s ease-in-out infinite; transform-origin: center; }
+    @keyframes floatY {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-7px); }
+    }
+    .spin-slow { animation: spin 9s linear infinite; transform-origin: center; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .twinkle { animation: twinkle 2.4s ease-in-out infinite; transform-origin: center; }
+    @keyframes twinkle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .45; transform: scale(.75); }
+    }
+
+    /* ---------- interactive press / hover feel ---------- */
+    .press-btn { transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease; }
+    .press-btn:active { transform: translateY(2px) scale(.98); }
+    .lift-card { transition: transform .2s ease, box-shadow .2s ease; }
+    .lift-card:hover { transform: translateY(-4px); box-shadow: 5px 5px 0 #111827; }
+
+    /* ---------- shake for empty-input error ---------- */
+    .shake { animation: shake .4s ease; }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+
+    /* ---------- loading dots for "asking all AIs" state ---------- */
+    .dot { animation: dotPulse 1.1s ease-in-out infinite; }
+    .dot:nth-child(2) { animation-delay: .15s; }
+    .dot:nth-child(3) { animation-delay: .3s; }
+    @keyframes dotPulse {
+      0%, 100% { opacity: .25; transform: translateY(0); }
+      50% { opacity: 1; transform: translateY(-3px); }
+    }
+
+    /* ---------- result reveal ---------- */
+    .reveal {
+      opacity: 0;
+      transform: translateY(10px);
+      animation: revealIn .5s ease forwards;
+    }
+    @keyframes revealIn { to { opacity: 1; transform: translateY(0); } }
+
+    /* ---------- mobile nav ---------- */
+    #mobileNav { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
+    #mobileNav.open { max-height: 320px; }
+
+    /* ---------- toast ---------- */
+    #toast {
+      transition: transform .3s ease, opacity .3s ease;
+      transform: translate(-50%, 20px);
+      opacity: 0;
+      pointer-events: none;
+    }
+    #toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+    /* ---------- scroll-reveal for lower sections ---------- */
+    .sr {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .sr.in { opacity: 1; transform: translateY(0); }
+
+    /* ---------- accordion ---------- */
+    .accordion-body { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
+    .accordion-body.open { max-height: 220px; }
+    .chev { transition: transform .3s ease; }
+    .chev.open { transform: rotate(90deg); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* keep the hero illustration fluid at every width */
+    #hero-illustration-wrap { width: 100%; max-width: 700px; aspect-ratio: 760 / 560; height: auto; }
+
+    /* ===== v2 design layer ===== */
+    body{position:relative;background-color:#FFFFFF;background-image:radial-gradient(rgba(17,24,39,.09) 1.2px,transparent 1.3px);background-size:22px 22px}
+    main,footer{position:relative;z-index:1}
+    #doodles{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+    .dd{position:absolute}
+    .dd>div{width:100%;height:100%;animation:bob var(--d,7s) ease-in-out infinite;animation-delay:var(--l,0s)}
+    @keyframes bob{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-14px) rotate(calc(var(--r,0deg) + 8deg))}}
+    @media(max-width:640px){#doodles{opacity:.45}}
+    #prog{position:absolute;left:0;bottom:-1px;height:3px;width:0;background:#FF5C5C}
+    .pulse-dot{width:8px;height:8px;border-radius:9999px;background:#FF5C5C;animation:pulse 1.8s infinite}
+    @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,92,92,.6)}70%,100%{box-shadow:0 0 0 8px rgba(255,92,92,0)}}
+    .mq{display:flex;width:max-content;animation:mq 30s linear infinite}
+    .mq:hover{animation-play-state:paused}
+    @keyframes mq{to{transform:translateX(-50%)}}
+    .caret{display:inline-block;width:2px;height:1em;background:#111827;margin-left:1px;vertical-align:-2px;animation:blink 1s steps(1) infinite}
+    @keyframes blink{50%{opacity:0}}
+    .dcard,#dsum{opacity:0;transform:translateY(14px) scale(.96);transition:opacity .45s ease,transform .45s cubic-bezier(.21,.9,.32,1)}
+    #dbtn.pressed{transform:scale(.94);background:#f89ab0}
+    .steps{position:relative}
+    .steps>.lift-card{position:relative;z-index:1;transform:rotate(var(--r,0deg))}
+    .steps>.lift-card:nth-child(1){--r:-1.4deg}.steps>.lift-card:nth-child(2){--r:1deg}.steps>.lift-card:nth-child(3){--r:-.8deg}
+    .steps>.lift-card:hover{transform:rotate(0) translateY(-6px)}
+    @media(min-width:768px){.steps::before{content:"";position:absolute;left:12%;right:12%;top:46px;border-top:3px dashed rgba(17,24,39,.35)}}
+    .bar{transform-origin:bottom;animation:grow 2.6s ease-in-out infinite alternate}
+    @keyframes grow{from{transform:scaleY(.3)}to{transform:scaleY(1)}}
+    .needle{transform-origin:60px 60px;animation:sway 3.2s ease-in-out infinite alternate}
+    @keyframes sway{from{transform:rotate(-55deg)}to{transform:rotate(50deg)}}
+    .bub{animation:bub 3.6s ease-in-out infinite}
+    @keyframes bub{0%,100%{transform:translateX(0)}50%{transform:translateX(10px)}}
+    .knob{animation:knob 3s ease-in-out infinite}
+    @keyframes knob{0%,35%{transform:translateX(0)}50%,85%{transform:translateX(18px)}100%{transform:translateX(0)}}
+    .bigword{font-size:clamp(3.5rem,17vw,13rem);line-height:.85;font-weight:800;letter-spacing:-.04em;color:transparent;-webkit-text-stroke:2px #FBAEBE;text-align:center;margin-top:2.5rem;transition:color .4s}
+    .bigword:hover{color:#FBAEBE}
+    .say{opacity:0;transform:translateY(10px) scale(.9);transition:opacity .45s ease,transform .5s cubic-bezier(.21,.9,.32,1)}
+    .say.on{opacity:1;transform:none}
+    .flow{animation:flow 1.2s linear infinite}
+    @keyframes flow{to{stroke-dashoffset:-22}}
+    .blink{transform-box:fill-box;transform-origin:center;animation:blink2 4.5s infinite}
+    @keyframes blink2{0%,92%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+</style>
+</head>
+<body class="min-h-screen text-gray-900 flex flex-col">
+<div id="doodles" aria-hidden="true"></div>
+
+<!-- BEGIN: MainHeader -->
+<header class="w-full border-b border-gray-900 bg-[#FFFFFF]/90 backdrop-blur sticky top-0 z-40" data-purpose="site-header">
+  <div id="prog"></div>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <a class="flex items-center gap-1.5 select-none" data-purpose="brand-logo" href="#top">
+      <span class="text-xl sm:text-2xl font-extrabold tracking-tight text-gray-950 font-sans">Remagine</span>
+      <svg class="w-5 h-5 -mt-2 text-gray-900 fill-current spin-slow" viewBox="0 0 24 24">
+        <path d="M12 0L14.2 8.8L23 11L14.2 13.2L12 22L9.8 13.2L1 11L9.8 8.8L12 0Z" fill="none" stroke="#111827" stroke-linejoin="round" stroke-width="2"></path>
+        <path d="M19 16L20 19.5L23.5 20.5L20 21.5L19 25L18 21.5L14.5 20.5L18 19.5L19 16Z" fill="#111827" transform="scale(0.55) translate(14, 4)"></path>
+      </svg>
+    </a>
+
+    <div class="flex items-center gap-3 sm:gap-7" data-purpose="nav-actions">
+      <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-800">
+        <a class="hover:text-black transition-colors" href="#demo">Demo</a>
+        <a class="hover:text-black transition-colors" href="#product">Product</a>
+        <a class="hover:text-black transition-colors" href="/history.html">All chats</a>
+        <a class="hover:text-black transition-colors" href="#careers">Careers</a>
+        <a class="hover:text-black transition-colors" href="#blogs">Blogs</a>
+      </nav>
+
+      <button id="askAiTopBtn" class="press-btn px-4 sm:px-5 py-2 rounded-full border-2 border-gray-950 bg-[#FBAEBE] hover:bg-[#fa9eb1] text-xs md:text-sm font-bold text-gray-950 shadow-sm inline-flex items-center justify-center">
+        Ask AI
+      </button>
+
+      <!-- Mobile menu toggle -->
+      <button id="menuToggle" aria-expanded="false" aria-label="Open menu" class="md:hidden press-btn w-9 h-9 rounded-full border-2 border-gray-950 flex items-center justify-center">
+        <svg id="menuIcon" class="w-4 h-4" fill="none" stroke="#111827" stroke-linecap="round" stroke-width="2" viewBox="0 0 24 24">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile nav panel -->
+  <div id="mobileNav" class="md:hidden border-t border-gray-900 bg-white">
+    <nav class="flex flex-col px-4 py-3 text-sm font-semibold text-gray-800">
+      <a class="py-3 border-b border-gray-100" href="#demo">Demo</a>
+      <a class="py-3 border-b border-gray-100" href="#product">Product</a>
+      <a class="py-3 border-b border-gray-100" href="/history.html">All chats</a>
+      <a class="py-3 border-b border-gray-100" href="#careers">Careers</a>
+      <a class="py-3" href="#blogs">Blogs</a>
+    </nav>
+  </div>
+</header>
+<!-- END: MainHeader -->
+
+<main id="top" class="flex-1 flex flex-col items-center pt-10 sm:pt-12 md:pt-16 pb-12 px-4">
+
+  <!-- Hero -->
+  <section class="max-w-3xl text-center mx-auto" data-purpose="hero-copy">
+    <div class="mb-6 inline-flex items-center gap-2 rounded-full border-2 border-gray-950 bg-white px-3.5 py-1.5 text-xs font-bold shadow-[3px_3px_0_#111827]"><span class="pulse-dot"></span>Eight leading AI models, side by side</div><br/>
+    <div class="inline-block relative">
+      <h1 class="text-3xl sm:text-4xl md:text-[54px] font-extrabold tracking-tight text-gray-950 leading-tight">
+        Stop Trusting One AI. Ask Them All
+      </h1>
+      <div class="absolute -top-3 -right-5 sm:-top-4 sm:-right-7 md:-top-5 md:-right-9">
+        <svg class="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 twinkle" fill="none" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16 1.5L19.5 12.5L30.5 16L19.5 19.5L16 30.5L12.5 19.5L1.5 16L12.5 12.5L16 1.5Z" fill="#F8FAFC" stroke="#111827" stroke-linejoin="round" stroke-width="2.2"></path>
+          <circle cx="26" cy="6" fill="#3B82F6" r="2.5" stroke="#111827" stroke-width="1.2"></circle>
+        </svg>
+      </div>
+    </div>
+
+    <p class="mt-4 text-base md:text-[17px] text-gray-700 max-w-lg mx-auto font-medium leading-relaxed px-2">
+      Compare answers from leading AI models, uncover different perspectives, and get a clear, purpose-driven summary — all in one place.
+    </p>
+
+    <form id="askForm" class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto" data-purpose="ask-form" novalidate>
+      <div class="w-full sm:w-64">
+        <label class="sr-only" for="askInput">Ask all AI at once</label>
+        <input id="askInput" class="w-full px-5 py-2.5 rounded-full border-2 border-gray-950 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all" placeholder="Ask all AI at once" type="text"/>
+      </div>
+      <button id="askBtn" type="submit" class="press-btn w-full sm:w-auto px-6 py-2.5 rounded-full border-2 border-gray-950 bg-[#FBAEBE] hover:bg-[#f99cb0] text-sm font-bold text-gray-950 whitespace-nowrap shadow-none hover:shadow-sm">
+        <span id="askBtnLabel">Ask</span>
+      </button>
+    </form>
+    <p id="askError" class="mt-2 text-xs font-semibold text-brandCoral hidden">Type a question first — that's what the AIs are waiting to answer.</p>
+
+    <!-- Results panel: hidden until a question is submitted -->
+    <div id="resultsPanel" class="mt-8 max-w-2xl mx-auto text-left hidden"></div>
+  </section>
+
+  
+  <!-- Hero scene -->
+  <section class="mt-12 md:mt-16 w-full max-w-3xl px-1" data-purpose="hero-illustration" aria-hidden="true">
+    <div class="mx-auto w-full rounded-2xl border-[2.5px] border-gray-950 bg-white px-4 py-3 text-center text-sm font-bold shadow-[5px_5px_0_#111827] sm:max-w-sm">Which laptop should I buy for video editing?</div>
+    <svg class=" h-9 w-full" viewBox="0 0 300 40" preserveAspectRatio="none" fill="none"><g stroke="#111827" stroke-width="2.5" stroke-dasharray="5 6" class="flow" vector-effect="non-scaling-stroke"><path d="M150 0C150 22 50 16 50 40" vector-effect="non-scaling-stroke"/><path d="M150 0V40" vector-effect="non-scaling-stroke"/><path d="M150 0C150 22 250 16 250 40" vector-effect="non-scaling-stroke"/></g></svg>
+    <div class="grid grid-cols-3 gap-2 sm:gap-8"><div class="flex flex-col items-center"><div class="say relative w-full rounded-xl border-2 border-gray-950 px-2 py-2 text-center text-[11px] font-bold leading-snug sm:px-3 sm:text-sm" style="background:#FFE1E1">RAM and screen first<span class="absolute -bottom-[7px] left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border-b-2 border-r-2 border-gray-950" style="background:#FFE1E1"></span></div><svg viewBox="0 0 100 100" class="float-slow mt-3 w-20 sm:w-28" style="animation-delay:0s"><path d="M24 40L20 14L42 28M76 40L80 14L58 28" fill="#FF5C5C" stroke="#111827" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><circle cx="50" cy="58" r="34" fill="#FF5C5C" stroke="#111827" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><g class="blink"><circle cx="38" cy="56" r="7" fill="#fff" stroke="#111827" stroke-width="2.5"/><circle cx="38" cy="57" r="3" fill="#111827"/></g><g class="blink"><circle cx="62" cy="56" r="7" fill="#fff" stroke="#111827" stroke-width="2.5"/><circle cx="62" cy="57" r="3" fill="#111827"/></g><path d="M42 70c5 6 11 6 16 0" fill="none" stroke="#111827" stroke-width="3" stroke-linecap="round"/></svg><p class="text-xs font-extrabold text-gray-700">Claude</p></div><div class="flex flex-col items-center"><div class="say relative w-full rounded-xl border-2 border-gray-950 px-2 py-2 text-center text-[11px] font-bold leading-snug sm:px-3 sm:text-sm" style="background:#DCE8FE">Chip speed first<span class="absolute -bottom-[7px] left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border-b-2 border-r-2 border-gray-950" style="background:#DCE8FE"></span></div><svg viewBox="0 0 100 100" class="float-slow mt-3 w-20 sm:w-28" style="animation-delay:0.7s"><path d="M50 28V12" stroke="#111827" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><circle cx="50" cy="10" r="5" fill="#FCD34D" stroke="#111827" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><rect x="16" y="28" width="68" height="62" rx="22" fill="#3B82F6" stroke="#111827" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><g class="blink"><circle cx="38" cy="54" r="7" fill="#fff" stroke="#111827" stroke-width="2.5"/><circle cx="38" cy="55" r="3" fill="#111827"/></g><g class="blink"><circle cx="62" cy="54" r="7" fill="#fff" stroke="#111827" stroke-width="2.5"/><circle cx="62" cy="55" r="3" fill="#111827"/></g><path d="M42 70c5 6 11 6 16 0" fill="none" stroke="#111827" stroke-width="3" stroke-linecap="round"/></svg><p class="text-xs font-extrabold text-gray-700">GPT</p></div><div class="flex flex-col items-center"><div class="say relative w-full rounded-xl border-2 border-gray-950 px-2 py-2 text-center text-[11px] font-bold leading-snug sm:px-3 sm:text-sm" style="background:#FEF3C7">Budget decides<span class="absolute -bottom-[7px] left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border-b-2 border-r-2 border-gray-950" style="background:#FEF3C7"></span></div><svg viewBox="0 0 100 100" class="float-slow mt-3 w-20 sm:w-28" style="animation-delay:1.4s"><path d="M20 62C14 36 36 24 52 26S88 38 82 64C78 84 56 90 42 88S24 82 20 62Z" fill="#FCD34D" stroke="#111827" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><path d="M50 26C50 14 58 10 64 12C62 20 56 26 50 26Z" fill="#A7F3D0" stroke="#111827" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><g class="blink"><circle cx="38" cy="58" r="7" fill="#fff" stroke="#111827" stroke-width="2.5"/><circle cx="38" cy="59" r="3" fill="#111827"/></g><g class="blink"><circle cx="62" cy="58" r="7" fill="#fff" stroke="#111827" stroke-width="2.5"/><circle cx="62" cy="59" r="3" fill="#111827"/></g><path d="M42 70c5 6 11 6 16 0" fill="none" stroke="#111827" stroke-width="3" stroke-linecap="round"/></svg><p class="text-xs font-extrabold text-gray-700">Gemini</p></div></div>
+    <svg class="-scale-y-100 h-9 w-full" viewBox="0 0 300 40" preserveAspectRatio="none" fill="none"><g stroke="#111827" stroke-width="2.5" stroke-dasharray="5 6" class="flow" vector-effect="non-scaling-stroke"><path d="M150 0C150 22 50 16 50 40" vector-effect="non-scaling-stroke"/><path d="M150 0V40" vector-effect="non-scaling-stroke"/><path d="M150 0C150 22 250 16 250 40" vector-effect="non-scaling-stroke"/></g></svg>
+    <div class="say mx-auto w-full rounded-2xl border-[2.5px] border-gray-950 bg-[#FFF5F3] px-4 py-3 text-center shadow-[5px_5px_0_#111827] sm:max-w-md"><p class="text-xs font-extrabold text-gray-800">Summary</p><p class="mt-1 text-sm font-semibold text-gray-950">Everyone weighs the specs. They differ on which one leads.</p></div>
+  </section>
+
+  <!-- Marquee -->
+  <section class="mt-16 md:mt-24 w-screen overflow-hidden" aria-hidden="true">
+    <div class="-rotate-1 border-y-[2.5px] border-gray-950 bg-gray-950 text-white py-3.5"><div class="mq items-center"><span class="text-lg font-extrabold">Ask once</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Compare side by side</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Spot the disagreements</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Read one clear summary</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Ask once</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Compare side by side</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Spot the disagreements</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Read one clear summary</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Ask once</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Compare side by side</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Spot the disagreements</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Read one clear summary</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Ask once</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Compare side by side</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Spot the disagreements</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Read one clear summary</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg></div></div>
+  </section>
+
+  <!-- Stats -->
+  <section class="sr mt-14 w-full max-w-5xl px-2 grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="rounded-2xl border-[2.5px] border-gray-950 bg-brandMint p-5 shadow-[5px_5px_0_#111827]"><p class="text-4xl font-extrabold"><span data-count="8">0</span></p><p class="mt-1 text-sm font-semibold">AI models answer at once</p></div>
+    <div class="rounded-2xl border-[2.5px] border-gray-950 bg-brandYellow p-5 shadow-[5px_5px_0_#111827]"><p class="text-4xl font-extrabold"><span data-count="1">0</span></p><p class="mt-1 text-sm font-semibold">question to type</p></div>
+    <div class="rounded-2xl border-[2.5px] border-gray-950 bg-[#FFF5F3] p-5 shadow-[5px_5px_0_#111827]"><p class="text-4xl font-extrabold"><span data-count="1">0</span></p><p class="mt-1 text-sm font-semibold">summary that names the gaps</p></div>
+    <div class="rounded-2xl border-[2.5px] border-gray-950 bg-white p-5 shadow-[5px_5px_0_#111827]"><p class="text-4xl font-extrabold"><span data-count="0">0</span></p><p class="mt-1 text-sm font-semibold">tabs to juggle</p></div>
+  </section>
+
+  <!-- Demo player -->
+  <section class="sr mt-24 md:mt-32 w-full max-w-5xl px-2" id="demo">
+    <div class="text-center max-w-xl mx-auto">
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-950">Watch one question become eight answers</h2>
+      <p class="mt-3 text-gray-600">A 12-second loop of a real comparison, from typing to summary. Pause it or drag the bar.</p>
+    </div>
+    <div class="relative mt-10">
+      <div class="absolute inset-0 translate-x-3 translate-y-3 rounded-3xl border-[2.5px] border-gray-950 bg-brandBlue"></div>
+      <div class="relative overflow-hidden rounded-3xl border-[2.5px] border-gray-950 bg-white">
+        <div class="flex items-center gap-2 border-b-2 border-gray-950 bg-brandYellow px-4 py-3">
+          <span class="h-3 w-3 rounded-full border-2 border-gray-950 bg-brandCoral"></span><span class="h-3 w-3 rounded-full border-2 border-gray-950 bg-white"></span><span class="h-3 w-3 rounded-full border-2 border-gray-950 bg-brandMint"></span>
+          <span class="ml-3 text-xs font-bold">Remagine: live comparison</span>
+        </div>
+        <div class="min-h-[380px] bg-[#F8FAFC] p-5 sm:p-8">
+          <div class="flex gap-2">
+            <div class="flex-1 rounded-full border-2 border-gray-950 bg-white px-4 py-2.5 text-sm font-medium"><span id="dq"></span><span class="caret"></span></div>
+            <div id="dbtn" class="rounded-full border-2 border-gray-950 bg-brandPink px-5 py-2.5 text-sm font-bold transition-transform">Ask</div>
+          </div>
+          <p id="dwait" class="mt-5 text-sm font-semibold text-gray-600 transition-opacity">Asking 8 AI models…</p>
+          <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4"><div class="dcard rounded-xl border-2 border-brandMint bg-white p-3"><p class="text-xs font-extrabold text-gray-500">Perplexity</p><p class="mt-1 text-xs leading-relaxed sm:text-sm">Yes for systems work, with demand rising.</p></div><div class="dcard rounded-xl border-2 border-[#86EFAC] bg-white p-3"><p class="text-xs font-extrabold text-gray-500">ChatGPT</p><p class="mt-1 text-xs leading-relaxed sm:text-sm">Yes. Start with a small command-line project.</p></div><div class="dcard rounded-xl border-2 border-brandYellow bg-white p-3"><p class="text-xs font-extrabold text-gray-500">Gemini</p><p class="mt-1 text-xs leading-relaxed sm:text-sm">Depends on your goal; weigh web against systems.</p></div><div class="dcard rounded-xl border-2 border-brandCoral bg-white p-3"><p class="text-xs font-extrabold text-gray-500">Claude</p><p class="mt-1 text-xs leading-relaxed sm:text-sm">Yes, if memory safety matters to you.</p></div><div class="dcard rounded-xl border-2 border-[#A78BFA] bg-white p-3"><p class="text-xs font-extrabold text-gray-500">Grok</p><p class="mt-1 text-xs leading-relaxed sm:text-sm">Yes, but expect a bumpy first month.</p></div><div class="dcard rounded-xl border-2 border-brandBlue bg-white p-3"><p class="text-xs font-extrabold text-gray-500">Copilot</p><p class="mt-1 text-xs leading-relaxed sm:text-sm">Yes. Try it on a small script you already have.</p></div><div class="dcard rounded-xl border-2 border-[#FDBA74] bg-white p-3"><p class="text-xs font-extrabold text-gray-500">Kimi</p><p class="mt-1 text-xs leading-relaxed sm:text-sm">Yes, if you enjoy a strict compiler.</p></div><div class="dcard rounded-xl border-2 border-brandPink bg-white p-3"><p class="text-xs font-extrabold text-gray-500">Meta AI</p><p class="mt-1 text-xs leading-relaxed sm:text-sm">Maybe. Check whether your team uses it.</p></div></div>
+          <div id="dsum" class="mt-4 rounded-xl border-2 border-gray-950 bg-[#FFF5F3] p-4"><p class="text-xs font-extrabold text-gray-700">Summary</p><p class="mt-1.5 text-sm leading-relaxed">Most say yes for systems work and split on how bumpy the start is. Begin with one small project, then decide.</p></div>
+        </div>
+        <div class="flex items-center gap-4 border-t-2 border-gray-950 bg-white px-4 py-3">
+          <button id="playBtn" aria-label="Pause demo" class="press-btn flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-gray-950 bg-brandPink"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="#111827" stroke="#111827" stroke-width="2" stroke-linejoin="round"><path id="playIcon" d="M7 5h3v14H7zM14 5h3v14h-3z"/></svg></button>
+          <div id="dtrack" class="h-3 flex-1 cursor-pointer overflow-hidden rounded-full border-2 border-gray-950 bg-white" role="slider" aria-label="Demo progress" aria-valuemin="0" aria-valuemax="12"><div id="dbar" class="h-full bg-brandCoral" style="width:0"></div></div>
+          <span id="dtime" class="w-10 text-right text-xs font-bold tabular-nums">0:00</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="sr mt-20 md:mt-28 w-full max-w-5xl px-2" id="how">
+    <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-950 text-center">How Remagine works</h2>
+    <div class="steps mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="lift-card crisp-border-thick rounded-2xl bg-white p-6">
+        <div class="w-11 h-11 rounded-full crisp-border bg-brandBlue flex items-center justify-center font-bold text-white">1</div>
+        <h3 class="mt-4 font-bold text-lg text-gray-950">Ask one question</h3>
+        <p class="mt-2 text-sm text-gray-600 leading-relaxed">Type it once. We send it to every model in your lineup at the same time.</p>
+      </div>
+      <div class="lift-card crisp-border-thick rounded-2xl bg-white p-6">
+        <div class="w-11 h-11 rounded-full crisp-border bg-brandCoral flex items-center justify-center font-bold text-white">2</div>
+        <h3 class="mt-4 font-bold text-lg text-gray-950">See where they differ</h3>
+        <p class="mt-2 text-sm text-gray-600 leading-relaxed">Answers line up side by side, so the gaps and disagreements stand out.</p>
+      </div>
+      <div class="lift-card crisp-border-thick rounded-2xl bg-white p-6">
+        <div class="w-11 h-11 rounded-full crisp-border bg-brandYellow flex items-center justify-center font-bold text-gray-950">3</div>
+        <h3 class="mt-4 font-bold text-lg text-gray-950">Get one summary</h3>
+        <p class="mt-2 text-sm text-gray-600 leading-relaxed">We fold every answer into a single, purpose-driven take you can act on.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Product -->
+  <section class="sr mt-20 md:mt-28 w-full max-w-4xl px-2" id="product">
+    <div class="crisp-border-thick rounded-2xl bg-[#F8FAFC] p-6 sm:p-10">
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-950">One box in, every model's answer out</h2>
+      <p class="mt-3 text-gray-700 max-w-xl leading-relaxed">Toggle the models you want to compare, ask your question, and Remagine keeps their answers — and a plain-language summary — in one thread.</p>
+      <div class="mt-6 flex flex-wrap gap-3" id="modelToggles">
+        <button data-model="on" class="model-toggle press-btn px-4 py-2 rounded-full border-2 border-gray-950 bg-brandMint text-sm font-bold">Perplexity ✓</button>
+        <button data-model="on" class="model-toggle press-btn px-4 py-2 rounded-full border-2 border-gray-950 bg-brandMint text-sm font-bold">ChatGPT ✓</button>
+        <button data-model="on" class="model-toggle press-btn px-4 py-2 rounded-full border-2 border-gray-950 bg-brandMint text-sm font-bold">Gemini ✓</button>
+        <button data-model="on" class="model-toggle press-btn px-4 py-2 rounded-full border-2 border-gray-950 bg-brandMint text-sm font-bold">Claude ✓</button>
+        <button data-model="on" class="model-toggle press-btn px-4 py-2 rounded-full border-2 border-gray-950 bg-brandMint text-sm font-bold">Grok ✓</button>
+        <button data-model="on" class="model-toggle press-btn px-4 py-2 rounded-full border-2 border-gray-950 bg-brandMint text-sm font-bold">Copilot ✓</button>
+        <button data-model="on" class="model-toggle press-btn px-4 py-2 rounded-full border-2 border-gray-950 bg-brandMint text-sm font-bold">Kimi ✓</button>
+        <button data-model="on" class="model-toggle press-btn px-4 py-2 rounded-full border-2 border-gray-950 bg-brandMint text-sm font-bold">Meta AI ✓</button>
+      </div>
+      <p class="mt-3 text-xs text-gray-500">Tap a model to include or leave it out of your next comparison.</p>
+
+      <div class="mt-14">
+        <h3 class="text-xl sm:text-2xl font-extrabold text-gray-950">Made for reading answers, not hunting for them</h3>
+        <div class="mt-6 grid gap-5 sm:grid-cols-2"><div class="lift-card rounded-2xl border-[2.5px] border-gray-950 p-6 bg-brandMint"><div class="h-28 flex items-end"><div class="flex h-24 items-end gap-1.5 w-full"><div class="bar w-full rounded-t-md border-2 border-gray-950" style="height:90%;background:#5EEAD4;animation-delay:0.0s"></div><div class="bar w-full rounded-t-md border-2 border-gray-950" style="height:60%;background:#86EFAC;animation-delay:0.3s"></div><div class="bar w-full rounded-t-md border-2 border-gray-950" style="height:80%;background:#FCD34D;animation-delay:0.6s"></div><div class="bar w-full rounded-t-md border-2 border-gray-950" style="height:70%;background:#FF5C5C;animation-delay:0.9s"></div><div class="bar w-full rounded-t-md border-2 border-gray-950" style="height:95%;background:#A78BFA;animation-delay:1.2s"></div><div class="bar w-full rounded-t-md border-2 border-gray-950" style="height:55%;background:#3B82F6;animation-delay:1.5s"></div><div class="bar w-full rounded-t-md border-2 border-gray-950" style="height:75%;background:#FDBA74;animation-delay:1.8s"></div><div class="bar w-full rounded-t-md border-2 border-gray-950" style="height:85%;background:#FBAEBE;animation-delay:2.1s"></div></div></div><h3 class="mt-5 font-bold text-lg text-gray-950">Side by side</h3><p class="mt-1.5 text-sm text-gray-800 leading-relaxed">Every model answers in its own lane, so length and tone differences are easy to see.</p></div><div class="lift-card rounded-2xl border-[2.5px] border-gray-950 p-6 bg-[#FFF5F3]"><div class="h-28 flex items-end"><svg viewBox="0 0 120 70" class="h-24 w-40"><path d="M10 60A50 50 0 0 1 110 60" fill="none" stroke="#111827" stroke-width="16" stroke-linecap="round"/><path d="M10 60A50 50 0 0 1 110 60" fill="none" stroke="#A7F3D0" stroke-width="10" stroke-linecap="round"/><g class="needle"><line x1="60" y1="60" x2="60" y2="20" stroke="#111827" stroke-width="4" stroke-linecap="round"/></g><circle cx="60" cy="60" r="7" fill="#FF5C5C" stroke="#111827" stroke-width="2.5"/></svg></div><h3 class="mt-5 font-bold text-lg text-gray-950">A clear read on agreement</h3><p class="mt-1.5 text-sm text-gray-800 leading-relaxed">See at a glance whether the models are aligned or pulling apart.</p></div><div class="lift-card rounded-2xl border-[2.5px] border-gray-950 p-6 bg-brandYellow"><div class="h-28 flex items-end"><div class="w-full space-y-2"><div class="bub w-3/4 rounded-2xl rounded-bl-sm border-2 border-gray-950 bg-white px-3 py-2 text-xs font-bold">Your question</div><div class="bub ml-auto w-2/3 rounded-2xl rounded-br-sm border-2 border-gray-950 bg-brandMint px-3 py-2 text-xs font-bold" style="animation-delay:.4s">Eight answers</div><div class="bub w-4/5 rounded-2xl rounded-bl-sm border-2 border-gray-950 bg-brandPink px-3 py-2 text-xs font-bold" style="animation-delay:.8s">One summary</div></div></div><h3 class="mt-5 font-bold text-lg text-gray-950">One thread, kept</h3><p class="mt-1.5 text-sm text-gray-800 leading-relaxed">Your question, the answers and the summary stay together for later.</p></div><div class="lift-card rounded-2xl border-[2.5px] border-gray-950 p-6 bg-white"><div class="h-28 flex items-end"><div class="w-full space-y-3"><div class="flex items-center gap-3"><div class="h-6 w-11 rounded-full border-2 border-gray-950 bg-white p-0.5"><div class="knob h-4 w-4 rounded-full border-2 border-gray-950 bg-brandCoral" style="animation-delay:0s"></div></div><span class="text-xs font-bold">Perplexity</span></div><div class="flex items-center gap-3"><div class="h-6 w-11 rounded-full border-2 border-gray-950 bg-white p-0.5"><div class="knob h-4 w-4 rounded-full border-2 border-gray-950 bg-brandCoral" style="animation-delay:0.5s"></div></div><span class="text-xs font-bold">Copilot</span></div><div class="flex items-center gap-3"><div class="h-6 w-11 rounded-full border-2 border-gray-950 bg-white p-0.5"><div class="knob h-4 w-4 rounded-full border-2 border-gray-950 bg-brandCoral" style="animation-delay:1s"></div></div><span class="text-xs font-bold">Kimi</span></div></div></div><h3 class="mt-5 font-bold text-lg text-gray-950">Your lineup</h3><p class="mt-1.5 text-sm text-gray-800 leading-relaxed">Switch models on or off before each comparison.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  
+  <!-- Blogs -->
+  <section class="sr mt-20 md:mt-28 w-full max-w-4xl px-2 pb-4" id="blogs">
+    <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-950">From the blog</h2>
+    <div class="mt-8 space-y-4" id="blogList">
+      <div class="blog-item lift-card bg-white crisp-border-thick rounded-2xl p-5">
+        <button class="blog-toggle w-full flex items-center justify-between text-left">
+          <h3 class="font-bold text-gray-950">Why one model is never the full picture</h3>
+          <svg class="chev w-4 h-4 shrink-0" fill="none" stroke="#111827" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"></path></svg>
+        </button>
+        <div class="accordion-body mt-0">
+          <p class="pt-3 text-sm text-gray-600 leading-relaxed">Every model has blind spots shaped by its training data and design choices. Asking several at once turns a single guess into a genuine comparison.</p>
+        </div>
+      </div>
+      <div class="blog-item lift-card bg-white crisp-border-thick rounded-2xl p-5">
+        <button class="blog-toggle w-full flex items-center justify-between text-left">
+          <h3 class="font-bold text-gray-950">Reading disagreement as a signal</h3>
+          <svg class="chev w-4 h-4 shrink-0" fill="none" stroke="#111827" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"></path></svg>
+        </button>
+        <div class="accordion-body mt-0">
+          <p class="pt-3 text-sm text-gray-600 leading-relaxed">When models disagree, that's rarely noise — it usually points at a genuinely ambiguous or under-specified question worth digging into further.</p>
+        </div>
+      </div>
+      <div class="blog-item lift-card bg-white crisp-border-thick rounded-2xl p-5">
+        <button class="blog-toggle w-full flex items-center justify-between text-left">
+          <h3 class="font-bold text-gray-950">Building a summary you can trust</h3>
+          <svg class="chev w-4 h-4 shrink-0" fill="none" stroke="#111827" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"></path></svg>
+        </button>
+        <div class="accordion-body mt-0">
+          <p class="pt-3 text-sm text-gray-600 leading-relaxed">A good summary names where models agree, flags where they split, and leaves the final call to you instead of quietly picking a winner.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="sr mt-24 md:mt-32 w-full max-w-5xl px-2" id="cta">
+    <div class="relative grid items-center gap-6 overflow-hidden rounded-[2rem] border-[2.5px] border-gray-950 bg-[#FFF5F3] px-6 py-12 shadow-[8px_8px_0_#111827] sm:px-12 md:grid-cols-[1fr_auto]">
+      <span class="absolute -left-10 -top-10 h-32 w-32 rounded-full border-[2.5px] border-gray-950 bg-brandYellow"></span>
+      <span class="absolute -bottom-12 right-40 hidden h-28 w-28 rounded-full border-[2.5px] border-gray-950 bg-brandMint md:block"></span>
+      <div class="relative">
+        <h2 class="text-3xl sm:text-4xl font-extrabold leading-tight text-gray-950">Your next question deserves a second opinion. And a third.</h2>
+        <p class="mt-3 max-w-md font-medium text-gray-900/80">Ask once and read every answer side by side.</p>
+        <button id="ctaBtn" class="press-btn mt-6 rounded-full border-2 border-gray-950 bg-white px-7 py-3 font-bold shadow-[3px_3px_0_#111827]">Ask your first question</button>
+      </div>
+      <svg id="mascot" viewBox="0 0 200 200" class="relative float-slow mx-auto h-40 w-40 cursor-pointer sm:h-52 sm:w-52" role="img" aria-label="Remagine mascot">
+        <path d="M100 30V12" stroke="#111827" stroke-width="4" stroke-linecap="round"/><path d="M100 0l4 8 8 4-8 4-4 8-4-8-8-4 8-4z" fill="#FCD34D" stroke="#111827" stroke-width="2.5" stroke-linejoin="round" class="twinkle"/>
+        <path d="M40 120C32 70 62 30 100 30s70 40 60 90c-6 34-36 56-60 56s-54-22-60-56z" fill="#FFFDF8" stroke="#111827" stroke-width="4" stroke-linejoin="round"/>
+        <g class="eye"><circle cx="72" cy="95" r="17" fill="#fff" stroke="#111827" stroke-width="3.5"/><circle cx="72" cy="95" r="8" fill="#111827"/></g>
+        <g class="eye"><circle cx="128" cy="95" r="17" fill="#fff" stroke="#111827" stroke-width="3.5"/><circle cx="128" cy="95" r="8" fill="#111827"/></g>
+        <ellipse cx="52" cy="128" rx="9" ry="6" fill="#FF5C5C" opacity=".45"/><ellipse cx="148" cy="128" rx="9" ry="6" fill="#FF5C5C" opacity=".45"/>
+        <path d="M84 132c8 10 24 10 32 0" fill="none" stroke="#111827" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </section>
+
+</main>
+
+<!-- Footer -->
+<footer class="relative z-[1] mt-24 w-full overflow-hidden border-t-[2.5px] border-gray-950 bg-gray-950 text-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-12 pb-8">
+    <div class="flex flex-col justify-between gap-8 md:flex-row">
+      <div><p class="text-2xl font-extrabold">Remagine</p><p class="mt-2 max-w-xs text-sm text-gray-400">One question, every model's answer, one clear summary.</p></div>
+      <nav class="flex gap-8 text-sm font-semibold text-gray-300"><a class="hover:text-white" href="#demo">Demo</a><a class="hover:text-white" href="#product">Product</a><a class="hover:text-white" href="#careers">Careers</a><a class="hover:text-white" href="#blogs">Blogs</a></nav>
+      <div class="flex items-center gap-3">
+        <button id="shareBtn" class="press-btn rounded-full border-2 border-white px-4 py-2 text-xs font-bold hover:bg-white/10">Copy link</button>
+        <button id="topBtn" class="press-btn flex h-9 w-9 items-center justify-center rounded-full border-2 border-white hover:bg-white/10" aria-label="Back to top"><svg class="h-4 w-4" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+      </div>
+    </div>
+    <p class="bigword select-none" aria-hidden="true">Remagine</p>
+    <p class="mt-6 text-center text-xs text-gray-400">© 2026 Remagine. Ask them all.</p>
+  </div>
+</footer>
+
+<!-- Toast -->
+<div id="toast" class="fixed left-1/2 bottom-6 z-50 px-5 py-2.5 rounded-full crisp-border-thick bg-gray-950 text-white text-sm font-semibold"></div>
+
+<script>
+  // ---------- mobile nav ----------
+  const menuToggle = document.getElementById('menuToggle');
+  const mobileNav = document.getElementById('mobileNav');
+  menuToggle.addEventListener('click', () => {
+    const open = mobileNav.classList.toggle('open');
+    menuToggle.setAttribute('aria-expanded', open);
+  });
+  mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    mobileNav.classList.remove('open');
+    menuToggle.setAttribute('aria-expanded', 'false');
+  }));
+
+  // ---------- Ask AI (top header button) ----------
+  document.getElementById('askAiTopBtn').addEventListener('click', () => {
+    document.getElementById('signup')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('askInput').focus();
+  });
+  // give the signup form a stable anchor id (it wraps the input/button)
+  document.getElementById('askForm').id = 'askForm';
+  document.getElementById('askForm').closest('section').id = 'signup';
+
+  // ---------- toast helper ----------
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  // ---------- Ask form: real multi-AI comparison via backend ----------
+  const askForm = document.getElementById('askForm');
+  const askInput = document.getElementById('askInput');
+  const askError = document.getElementById('askError');
+  const resultsPanel = document.getElementById('resultsPanel');
+  const askBtnLabel = document.getElementById('askBtnLabel');
+
+  const NAME_TO_ID = {
+    'Perplexity': 'perplexity', 'ChatGPT': 'chatgpt', 'Gemini': 'gemini', 'Claude': 'claude',
+    'Grok': 'grok', 'Copilot': 'copilot', 'Kimi': 'kimi', 'Meta AI': 'metaai'
+  };
+
+  function activeModelIds() {
+    const names = Array.from(document.querySelectorAll('.model-toggle'))
+      .filter(b => b.dataset.model === 'on')
+      .map(b => b.textContent.replace(' ✓', '').trim());
+    return names.map(n => NAME_TO_ID[n]).filter(Boolean);
+  }
+
+  askForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const q = askInput.value.trim();
+    if (!q) {
+      askError.classList.remove('hidden');
+      askInput.classList.add('shake');
+      setTimeout(() => askInput.classList.remove('shake'), 400);
+      askInput.focus();
+      return;
+    }
+    askError.classList.add('hidden');
+
+    const modelIds = activeModelIds();
+    askBtnLabel.textContent = 'Asking…';
+    document.getElementById('askBtn').disabled = true;
+
+    resultsPanel.classList.remove('hidden');
+    resultsPanel.innerHTML = `
+      <div class="crisp-border-thick rounded-2xl p-5 bg-white">
+        <p class="text-sm font-semibold text-gray-700">Asking every model
+          <span class="inline-flex gap-1 align-middle ml-1">
+            <span class="dot inline-block w-1.5 h-1.5 rounded-full bg-gray-700"></span>
+            <span class="dot inline-block w-1.5 h-1.5 rounded-full bg-gray-700"></span>
+            <span class="dot inline-block w-1.5 h-1.5 rounded-full bg-gray-700"></span>
+          </span>
+        </p>
+      </div>`;
+
+    try {
+      const res = await fetch('/api/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: q, models: modelIds.length ? modelIds : null })
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Request failed');
+      }
+      const session = await res.json();
+      // Hand off to the dedicated chat/results page.
+      window.location.href = `/chat.html?id=${encodeURIComponent(session.id)}`;
+    } catch (err) {
+      resultsPanel.innerHTML = `
+        <div class="crisp-border-thick rounded-2xl p-5 bg-white">
+          <p class="text-sm font-semibold text-brandCoral">Something went wrong: ${(err.message || 'please try again').replace(/</g,'&lt;')}</p>
+        </div>`;
+      askBtnLabel.textContent = 'Ask';
+      document.getElementById('askBtn').disabled = false;
+    }
+  });
+
+  // ---------- model toggles ----------
+  document.querySelectorAll('.model-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const on = btn.dataset.model === 'on';
+      btn.dataset.model = on ? 'off' : 'on';
+      btn.classList.toggle('bg-brandMint', !on);
+      btn.classList.toggle('bg-gray-100', on);
+      btn.classList.toggle('text-gray-400', on);
+      btn.textContent = btn.textContent.replace(' ✓', '') + (on ? '' : ' ✓');
+    });
+  });
+
+  // ---------- careers apply confirmation ----------
+  document.querySelectorAll('.apply-btn').forEach(btn => {
+    btn.addEventListener('click', () => showToast(`Opening your email client for ${btn.dataset.role}…`));
+  });
+
+  // ---------- blog accordions ----------
+  document.querySelectorAll('.blog-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const body = btn.nextElementSibling;
+      const chev = btn.querySelector('.chev');
+      const isOpen = body.classList.contains('open');
+      document.querySelectorAll('.accordion-body.open').forEach(b => { if (b !== body) { b.classList.remove('open'); } });
+      document.querySelectorAll('.chev.open').forEach(c => { if (c !== chev) c.classList.remove('open'); });
+      body.classList.toggle('open', !isOpen);
+      chev.classList.toggle('open', !isOpen);
+    });
+  });
+
+  // ---------- footer: copy link + back to top ----------
+  document.getElementById('shareBtn').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      showToast('Link copied to clipboard');
+    } catch {
+      showToast('Copy this page\'s URL from your address bar');
+    }
+  });
+  document.getElementById('topBtn').addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // ---------- scroll-reveal for lower sections ----------
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.sr').forEach(el => io.observe(el));
+
+  // ---------- v2: doodles, progress, count-up, demo player, mascot ----------
+  (function(){
+    const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const C = ['#FBAEBE','#3B82F6','#A7F3D0','#FCD34D','#FF5C5C'];
+    const S = (b,f)=>`<svg viewBox="0 0 32 32" width="100%" height="100%" fill="${f}" stroke="#111827" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">${b}</svg>`;
+    const shapes = [
+      f=>S('<path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z"/>',f),
+      f=>S('<path d="M16 28C5 20 3 13 7 8.5 10.5 5 15 6.5 16 10c1-3.5 5.5-5 9-1.5C29 13 27 20 16 28z"/>',f),
+      f=>S('<path d="M9 25a6 6 0 0 1-.5-12A8 8 0 0 1 24 11.500a6.500 6.500 0 0 1 0 13.500z"/>',f),
+      f=>S('<circle cx="16" cy="16" r="10" fill="none" stroke-width="5"/>',f),
+      f=>S('<path d="M16 5v22M5 16h22" fill="none" stroke-width="4.5"/>',f),
+      f=>S('<path d="M3 16c3-8 6-8 9 0s6 8 9 0 6-8 8-2" fill="none" stroke-width="3"/>',f),
+      f=>S('<circle cx="16" cy="7" r="5.500"/><circle cx="25" cy="16" r="5.500"/><circle cx="16" cy="25" r="5.500"/><circle cx="7" cy="16" r="5.500"/><circle cx="16" cy="16" r="4" fill="#FCD34D"/>',f)
+    ];
+    const box = document.getElementById('doodles'), items = [];
+    let seed = 7; const rnd = ()=> (seed = (seed*9301+49297)%233280)/233280;
+    for (let i=0;i<22;i++){
+      const el = document.createElement('div'), s = 26+Math.round(rnd()*26);
+      el.className='dd';
+      el.style.cssText=`width:${s}px;height:${s}px;top:${3+i*4.4}%;left:${i%2?86+rnd()*10:2+rnd()*9}%`;
+      el.innerHTML=`<div style="--d:${5+rnd()*5}s;--l:-${rnd()*5}s;--r:${Math.round(rnd()*40-20)}deg">${shapes[i%shapes.length](C[i%C.length])}</div>`;
+      box.appendChild(el); items.push([el,(rnd()-.5)*.16]);
+    }
+    const prog = document.getElementById('prog'); let tick=false;
+    function onScroll(){
+      if (tick) return; tick=true;
+      requestAnimationFrame(()=>{
+        const y=scrollY, max=document.documentElement.scrollHeight-innerHeight;
+        prog.style.width=(max>0?y/max*100:0)+'%';
+        if(!RM) items.forEach(([el,k])=>el.style.transform=`translate3d(0,${-y*k}px,0)`);
+        tick=false;
+      });
+    }
+    addEventListener('scroll',onScroll,{passive:true}); onScroll();
+
+    // count-up
+    const co = new IntersectionObserver(es=>es.forEach(e=>{
+      if(!e.isIntersecting) return; co.unobserve(e.target);
+      const n=+e.target.dataset.count, t0=performance.now();
+      (function step(t){const k=Math.min((t-t0)/900,1);e.target.textContent=Math.round(n*k);if(k<1&&!RM)requestAnimationFrame(step);else e.target.textContent=n;})(t0);
+    }),{threshold:.6});
+    document.querySelectorAll('[data-count]').forEach(el=>co.observe(el));
+
+    // demo player: state is a pure function of time t
+    const D=12000, Q='Is Rust worth learning this year?';
+    const dq=document.getElementById('dq'), dbtn=document.getElementById('dbtn'), dwait=document.getElementById('dwait'),
+          dsum=document.getElementById('dsum'), dbar=document.getElementById('dbar'), dtime=document.getElementById('dtime'),
+          cards=[...document.querySelectorAll('.dcard')], playBtn=document.getElementById('playBtn'),
+          playIcon=document.getElementById('playIcon'), dtrack=document.getElementById('dtrack');
+    const show=(el,on)=>{el.style.opacity=on?1:0;el.style.transform=on?'none':'translateY(14px) scale(.96)';};
+    function render(t){
+      dq.textContent=Q.slice(0,Math.min(Q.length,Math.max(0,Math.floor((t-400)/70))));
+      dbtn.classList.toggle('pressed',t>3000&&t<3400);
+      dwait.style.opacity=t>3200&&t<4700?1:0;
+      cards.forEach((c,i)=>show(c,t>4400+i*350));
+      show(dsum,t>7800);
+      dbar.style.width=(t/D*100)+'%';
+      dtime.textContent='0:'+String(Math.floor(t/1000)).padStart(2,'0');
+      dtrack.setAttribute('aria-valuenow',Math.floor(t/1000));
+    }
+    let t=RM?D:0, playing=!RM, vis=false, last=performance.now();
+    render(t);
+    new IntersectionObserver(es=>vis=es[0].isIntersecting).observe(document.getElementById('demo'));
+    (function loop(now){
+      if(playing&&vis){t+=Math.min(now-last,60); if(t>D+2500)t=0; render(Math.min(t,D));}
+      last=now; requestAnimationFrame(loop);
+    })(last);
+    playBtn.addEventListener('click',()=>{
+      playing=!playing;
+      playIcon.setAttribute('d',playing?'M7 5h3v14H7zM14 5h3v14h-3z':'M8 5l11 7-11 7z');
+      playBtn.setAttribute('aria-label',playing?'Pause demo':'Play demo');
+    });
+    dtrack.addEventListener('click',e=>{const r=dtrack.getBoundingClientRect();t=Math.max(0,Math.min(.999,(e.clientX-r.left)/r.width))*D;render(t);});
+
+    // mascot eyes + CTA
+    const eyes=[...document.querySelectorAll('#mascot .eye')];
+    addEventListener('pointermove',e=>eyes.forEach(g=>{
+      const r=g.firstElementChild.getBoundingClientRect(), a=Math.atan2(e.clientY-(r.top+r.height/2),e.clientX-(r.left+r.width/2));
+      g.lastElementChild.style.transform=`translate(${Math.cos(a)*6}px,${Math.sin(a)*6}px)`;
+    }),{passive:true});
+    document.getElementById('mascot').addEventListener('click',()=>showToast('Boop! Ask me anything.'));
+    document.getElementById('ctaBtn').addEventListener('click',()=>{
+      document.getElementById('signup').scrollIntoView({behavior:'smooth'});
+      setTimeout(()=>document.getElementById('askInput').focus({preventScroll:true}),500);
+    });
+  })();
+
+  // ---------- hero scene loop ----------
+  (function(){
+    const els=[...document.querySelectorAll('.say')]; if(!els.length) return;
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches){els.forEach(e=>e.classList.add('on'));return;}
+    function run(){
+      els.forEach((e,i)=>setTimeout(()=>e.classList.add('on'),500+i*300+(i===els.length-1?600:0)));
+      setTimeout(()=>els.forEach(e=>e.classList.remove('on')),8000);
+    }
+    run(); setInterval(run,9500);
+  })();
+</script>
+</body>
+</html>
