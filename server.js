@@ -22,6 +22,10 @@ if (!GROQ_API_KEY) {
   console.warn(
     "[warn] GROQ_API_KEY is not set. /api/ask will return a 500 until it is configured."
   );
+} else {
+  console.log(
+    `[info] GROQ_API_KEY loaded (starts with "${GROQ_API_KEY.slice(0, 6)}...", length ${GROQ_API_KEY.length}). Using model "${GROQ_MODEL}".`
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -209,17 +213,25 @@ async function askAllPersonasOneShot(question, selectedIds) {
     );
     parsed = extractJson(raw);
   } catch (err) {
+    console.error("[askAllPersonasOneShot] Groq call/parse failed:", err.message || err);
     // Whole call (or JSON parse) failed — fall back to a uniform error state
-    // for every persona rather than partial/broken data.
+    // for every persona rather than partial/broken data. The real error is
+    // surfaced in the summary text itself so it's visible on the chat page,
+    // not just in server logs — makes misconfiguration (bad key, wrong model
+    // id, rate limit) diagnosable without needing to check Render's logs.
+    const message = String(err.message || err);
     const answers = personas.map((p) => ({
       id: p.id,
       name: p.name,
       color: p.color,
       text: "This model couldn't answer right now.",
       ok: false,
-      error: String(err.message || err),
+      error: message,
     }));
-    return { answers, summary: "None of the models could answer this time — please try again in a moment." };
+    return {
+      answers,
+      summary: `Something went wrong talking to the model, so no answers came back. Details: ${message}`,
+    };
   }
 
   const answers = personas.map((p) => {
