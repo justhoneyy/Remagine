@@ -103,22 +103,22 @@ function pushSession(session) {
   }
 }
 
-async function callGroq(systemPrompt, userQuestion, { maxTokens = 220, temperature = 0.7 } = {}) {
+async function callGroq(messages, { maxTokens = 1400, temperature = 0.8, jsonMode = false } = {}) {
+  const body = {
+    model: GROQ_MODEL,
+    messages,
+    temperature,
+    max_completion_tokens: maxTokens,
+  };
+  if (jsonMode) body.response_format = { type: "json_object" };
+
   const res = await fetch(GROQ_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${GROQ_API_KEY}`,
     },
-    body: JSON.stringify({
-      model: GROQ_MODEL,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userQuestion },
-      ],
-      temperature,
-      max_completion_tokens: maxTokens,
-    }),
+    body: JSON.stringify(body),
   });
 
   if (!res.ok) {
@@ -132,47 +132,113 @@ async function callGroq(systemPrompt, userQuestion, { maxTokens = 220, temperatu
   return text;
 }
 
-async function askAllPersonas(question, selectedIds) {
+// ---------------------------------------------------------------------------
+// Single-request mode: one Groq call asks the model to role-play all 8
+// personas AND write the summary, returned as one JSON object. This uses
+// ~1 request instead of 9, which is what actually matters for Groq's
+// per-minute/per-day request limits (the token count is similar either way,
+// since the model still has to generate roughly the same amount of text).
+// ---------------------------------------------------------------------------
+function buildJsonPrompt(question, personas) {
+  const roster = personas
+    .map((p, i) => `${i + 1}. id: "${p.id}", label: "${p.name}" — style: ${p.system}`)
+    .join("\n");
+
+  const shape = {
+    answers: personas.reduce((acc, p) => {
+      acc[p.id] = "string";
+      return acc;
+    }, {}),
+    summary: "string",
+  };
+
+  return (
+    `You will answer one user question from ${personas.length} distinct assistant personas, ` +
+    `then write a short summary comparing them. Stay fully in character for each persona and ` +
+    `make sure the answers genuinely differ in angle, tone and emphasis — do not repeat the same ` +
+    `sentence structure across personas.\n\n` +
+    `Personas:\n${roster}\n\n` +
+    `User question: ${question}\n\n` +
+    `Respond with ONLY a single valid JSON object, no markdown fences, no commentary, ` +
+    `matching exactly this shape (keys are persona ids):\n${JSON.stringify(shape, null, 2)}\n\n` +
+    `Rules:\n` +
+    `- Each persona answer: 2-4 sentences, in that persona's style, answering the question directly.\n` +
+    `- Never mention you are an AI language model or name any real company/product in the answers.\n` +
+    `- "summary" must be 2-4 sentences: note where the personas broadly agree, name any real ` +
+    `disagreement, and end with a plain-language takeaway. Do not just restate every answer.\n` +
+    `- Output must be valid JSON — no trailing commas, no comments, no text outside the JSON object.`
+  );
+}
+
+function extractJson(raw) {
+  // Models sometimes wrap JSON in ```json fences, or add stray text before/after
+  // the object, despite instructions. Strip fences, then fall back to slicing
+  // out the outermost {...} block if direct parsing fails.
+  let cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
+  try {
+    return JSON.parse(cleaned);
+  } catch (_err) {
+    const start = cleaned.indexOf("{");
+    const end = cleaned.lastIndexOf("}");
+    if (start === -1 || end === -1 || end <= start) throw new Error("No JSON object found in model output");
+    return JSON.parse(cleaned.slice(start, end + 1));
+  }
+}
+
+async function askAllPersonasOneShot(question, selectedIds) {
   const personas = selectedIds && selectedIds.length
     ? PERSONAS.filter((p) => selectedIds.includes(p.id))
     : PERSONAS;
 
-  const results = await Promise.all(
-    personas.map(async (persona) => {
-      try {
-        const text = await callGroq(persona.system, question, { maxTokens: 180 });
-        return { id: persona.id, name: persona.name, color: persona.color, text, ok: true };
-      } catch (err) {
-        return {
-          id: persona.id,
-          name: persona.name,
-          color: persona.color,
-          text: "This model couldn't answer right now.",
-          ok: false,
-          error: String(err.message || err),
-        };
-      }
-    })
-  );
-  return results;
-}
+  const prompt = buildJsonPrompt(question, personas);
 
-async function summarize(question, answers) {
-  const successful = answers.filter((a) => a.ok);
-  if (!successful.length) {
-    return "None of the models could answer this time — please try again in a moment.";
-  }
-  const digest = successful.map((a) => `${a.name}: ${a.text}`).join("\n");
-  const system =
-    "You write short, neutral summaries comparing several AI answers to the same question. " +
-    "In 2-4 sentences: say where the answers broadly agree, name any real disagreement, and end with a clear plain-language takeaway. " +
-    "Do not just repeat every answer; synthesize.";
-  const prompt = `Question: ${question}\n\nAnswers:\n${digest}\n\nWrite the summary now.`;
+  let parsed;
   try {
-    return await callGroq(system, prompt, { maxTokens: 200, temperature: 0.5 });
+    const raw = await callGroq(
+      [
+        {
+          role: "system",
+          content:
+            "You are a JSON generation assistant. You MUST ALWAYS return valid JSON matching the exact schema " +
+            "given in the user prompt. Never wrap it in markdown fences. Never add commentary before or after " +
+            "the JSON object. Only the JSON object itself.",
+        },
+        { role: "user", content: prompt },
+      ],
+      { maxTokens: 1600, temperature: 0.8, jsonMode: true }
+    );
+    parsed = extractJson(raw);
   } catch (err) {
-    return "Summary unavailable right now, but you can compare the answers above directly.";
+    // Whole call (or JSON parse) failed — fall back to a uniform error state
+    // for every persona rather than partial/broken data.
+    const answers = personas.map((p) => ({
+      id: p.id,
+      name: p.name,
+      color: p.color,
+      text: "This model couldn't answer right now.",
+      ok: false,
+      error: String(err.message || err),
+    }));
+    return { answers, summary: "None of the models could answer this time — please try again in a moment." };
   }
+
+  const answers = personas.map((p) => {
+    const text = typeof parsed?.answers?.[p.id] === "string" ? parsed.answers[p.id].trim() : "";
+    return {
+      id: p.id,
+      name: p.name,
+      color: p.color,
+      text: text || "This model couldn't answer right now.",
+      ok: Boolean(text),
+    };
+  });
+
+  const summary =
+    typeof parsed?.summary === "string" && parsed.summary.trim()
+      ? parsed.summary.trim()
+      : "Summary unavailable right now, but you can compare the answers above directly.";
+
+  return { answers, summary };
 }
 
 // ---------------------------------------------------------------------------
@@ -195,8 +261,7 @@ app.post("/api/ask", async (req, res) => {
       return res.status(500).json({ error: "Server is missing GROQ_API_KEY." });
     }
 
-    const answers = await askAllPersonas(question, selectedIds);
-    const summary = await summarize(question, answers);
+    const { answers, summary } = await askAllPersonasOneShot(question, selectedIds);
 
     const session = {
       id: crypto.randomBytes(6).toString("hex"),
