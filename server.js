@@ -107,14 +107,19 @@ function pushSession(session) {
   }
 }
 
-async function callGroq(messages, { maxTokens = 1400, temperature = 0.8, jsonMode = false } = {}) {
+async function callGroq(messages, { maxTokens = 1400, temperature = 0.8, jsonSchema = null } = {}) {
   const body = {
     model: GROQ_MODEL,
     messages,
     temperature,
     max_completion_tokens: maxTokens,
   };
-  if (jsonMode) body.response_format = { type: "json_object" };
+  if (jsonSchema) {
+    body.response_format = {
+      type: "json_schema",
+      json_schema: jsonSchema,
+    };
+  }
 
   const res = await fetch(GROQ_URL, {
     method: "POST",
@@ -127,7 +132,7 @@ async function callGroq(messages, { maxTokens = 1400, temperature = 0.8, jsonMod
 
   if (!res.ok) {
     const errText = await res.text().catch(() => "");
-    throw new Error(`Groq request failed (${res.status}): ${errText.slice(0, 300)}`);
+    throw new Error(`Groq request failed (${res.status}): ${errText.slice(0, 500)}`);
   }
 
   const data = await res.json();
@@ -142,19 +147,47 @@ async function callGroq(messages, { maxTokens = 1400, temperature = 0.8, jsonMod
 // ~1 request instead of 9, which is what actually matters for Groq's
 // per-minute/per-day request limits (the token count is similar either way,
 // since the model still has to generate roughly the same amount of text).
+//
+// We use Groq's structured-outputs mode (response_format: json_schema,
+// strict: true) rather than the looser json_object mode. gpt-oss-20b
+// supports strict schema-constrained decoding, which guarantees the shape
+// is valid — json_object mode only asks nicely via the prompt and can
+// reject the whole request with a 400 "Failed to validate JSON" error if
+// the model's free-form attempt doesn't parse.
 // ---------------------------------------------------------------------------
-function buildJsonPrompt(question, personas) {
+function buildPersonaSchema(personas) {
+  const answerProps = {};
+  personas.forEach((p) => {
+    answerProps[p.id] = { type: "string", description: `${p.name}'s answer, in that persona's style.` };
+  });
+
+  return {
+    name: "persona_answers",
+    strict: true,
+    schema: {
+      type: "object",
+      properties: {
+        answers: {
+          type: "object",
+          properties: answerProps,
+          required: personas.map((p) => p.id),
+          additionalProperties: false,
+        },
+        summary: {
+          type: "string",
+          description: "2-4 sentence neutral summary comparing the persona answers.",
+        },
+      },
+      required: ["answers", "summary"],
+      additionalProperties: false,
+    },
+  };
+}
+
+function buildPrompt(question, personas) {
   const roster = personas
     .map((p, i) => `${i + 1}. id: "${p.id}", label: "${p.name}" — style: ${p.system}`)
     .join("\n");
-
-  const shape = {
-    answers: personas.reduce((acc, p) => {
-      acc[p.id] = "string";
-      return acc;
-    }, {}),
-    summary: "string",
-  };
 
   return (
     `You will answer one user question from ${personas.length} distinct assistant personas, ` +
@@ -163,21 +196,17 @@ function buildJsonPrompt(question, personas) {
     `sentence structure across personas.\n\n` +
     `Personas:\n${roster}\n\n` +
     `User question: ${question}\n\n` +
-    `Respond with ONLY a single valid JSON object, no markdown fences, no commentary, ` +
-    `matching exactly this shape (keys are persona ids):\n${JSON.stringify(shape, null, 2)}\n\n` +
     `Rules:\n` +
     `- Each persona answer: 2-4 sentences, in that persona's style, answering the question directly.\n` +
     `- Never mention you are an AI language model or name any real company/product in the answers.\n` +
-    `- "summary" must be 2-4 sentences: note where the personas broadly agree, name any real ` +
-    `disagreement, and end with a plain-language takeaway. Do not just restate every answer.\n` +
-    `- Output must be valid JSON — no trailing commas, no comments, no text outside the JSON object.`
+    `- The summary must be 2-4 sentences: note where the personas broadly agree, name any real ` +
+    `disagreement, and end with a plain-language takeaway. Do not just restate every answer.`
   );
 }
 
 function extractJson(raw) {
-  // Models sometimes wrap JSON in ```json fences, or add stray text before/after
-  // the object, despite instructions. Strip fences, then fall back to slicing
-  // out the outermost {...} block if direct parsing fails.
+  // Structured-output mode should already return clean JSON, but keep a
+  // defensive fallback in case a fence or stray text slips through.
   let cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
   try {
     return JSON.parse(cleaned);
@@ -194,7 +223,8 @@ async function askAllPersonasOneShot(question, selectedIds) {
     ? PERSONAS.filter((p) => selectedIds.includes(p.id))
     : PERSONAS;
 
-  const prompt = buildJsonPrompt(question, personas);
+  const prompt = buildPrompt(question, personas);
+  const schema = buildPersonaSchema(personas);
 
   let parsed;
   try {
@@ -202,14 +232,11 @@ async function askAllPersonasOneShot(question, selectedIds) {
       [
         {
           role: "system",
-          content:
-            "You are a JSON generation assistant. You MUST ALWAYS return valid JSON matching the exact schema " +
-            "given in the user prompt. Never wrap it in markdown fences. Never add commentary before or after " +
-            "the JSON object. Only the JSON object itself.",
+          content: "You answer questions from multiple assistant personas at once and summarize them, always following the given response schema exactly.",
         },
         { role: "user", content: prompt },
       ],
-      { maxTokens: 1600, temperature: 0.8, jsonMode: true }
+      { maxTokens: 1600, temperature: 0.8, jsonSchema: schema }
     );
     parsed = extractJson(raw);
   } catch (err) {
