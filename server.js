@@ -107,7 +107,7 @@ function pushSession(session) {
   }
 }
 
-async function callGroq(messages, { maxTokens = 1400, temperature = 0.8, jsonSchema = null } = {}) {
+async function callGroq(messages, { maxTokens = 1400, temperature = 0.8, jsonSchema = null, reasoningEffort = null } = {}) {
   const body = {
     model: GROQ_MODEL,
     messages,
@@ -120,6 +120,7 @@ async function callGroq(messages, { maxTokens = 1400, temperature = 0.8, jsonSch
       json_schema: jsonSchema,
     };
   }
+  if (reasoningEffort) body.reasoning_effort = reasoningEffort;
 
   const res = await fetch(GROQ_URL, {
     method: "POST",
@@ -236,7 +237,7 @@ async function askAllPersonasOneShot(question, selectedIds) {
         },
         { role: "user", content: prompt },
       ],
-      { maxTokens: 1600, temperature: 0.8, jsonSchema: schema }
+      { maxTokens: 4000, temperature: 0.8, jsonSchema: schema, reasoningEffort: "low" }
     );
     parsed = extractJson(raw);
   } catch (err) {
