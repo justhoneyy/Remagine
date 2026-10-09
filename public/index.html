@@ -161,6 +161,11 @@ body{font-size:16px}.wrap{padding:0 18px}.bar{height:56px}.logo{font-size:1.35re
 footer .row{flex-direction:column;align-items:flex-start;gap:20px;padding-bottom:max(28px,env(safe-area-inset-bottom))}footer nav{flex-wrap:wrap;gap:18px}
 #toast{width:calc(100% - 36px);text-align:center;bottom:max(16px,env(safe-area-inset-bottom))}
 }
+
+@media(max-width:760px){
+.hero-grid>div:not(.side){min-height:calc(100vh - 109px);min-height:calc(100svh - 109px);display:flex;flex-direction:column;justify-content:center}
+#askForm{margin-top:24px}
+}
 </style></head>
 <body>
 <header><div id="prog"></div><div class="wrap bar"><a class="logo" href="#top">Remagine</a>
@@ -242,7 +247,7 @@ document.querySelector('.viz.b').innerHTML=[90,60,80,70,95,55,75,85].map((h,i)=>
 $('menuToggle').onclick=()=>{const o=$('mobileNav').classList.toggle('open');$('menuToggle').setAttribute('aria-expanded',o)};
 $('mobileNav').querySelectorAll('a').forEach(a=>a.onclick=()=>$('mobileNav').classList.remove('open'));
 function showToast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(showToast._t);showToast._t=setTimeout(()=>t.classList.remove('show'),2200)}
-const focusAsk=()=>{$('signup').scrollIntoView({behavior:'smooth'});setTimeout(()=>$('askInput').focus({preventScroll:true}),450)};
+const focusAsk=()=>{$('askForm').scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>$('askInput').focus({preventScroll:true}),500)};
 $('askAiTopBtn').onclick=focusAsk;$('ctaBtn').onclick=focusAsk;
 // ask form (backend unchanged)
 const form=$('askForm'),panel=$('resultsPanel');
