@@ -166,6 +166,18 @@ footer .row{flex-direction:column;align-items:flex-start;gap:20px;padding-bottom
 .hero-grid>div:not(.side){min-height:calc(100vh - 109px);min-height:calc(100svh - 109px);display:flex;flex-direction:column;justify-content:center}
 #askForm{margin-top:24px}
 }
+
+@media(min-width:901px){
+.hero{padding-top:clamp(20px,3.5vh,48px)}
+.hero-grid{align-items:center;padding-bottom:clamp(20px,4vh,48px);gap:clamp(24px,3vw,56px)}
+.hero-grid>div:not(.side){container-type:inline-size}
+h1{font-size:clamp(2.8rem,min(14.2cqw,13vh),7.5rem)}
+h1 span{white-space:nowrap}
+.lead{margin-top:clamp(12px,2.2vh,24px)}
+#askForm{margin-top:clamp(16px,3vh,32px)}
+.hero-img svg{aspect-ratio:16/9}
+.lane{padding:6px 14px}
+}
 </style></head>
 <body>
 <header><div id="prog"></div><div class="wrap bar"><a class="logo" href="#top">Remagine</a>
