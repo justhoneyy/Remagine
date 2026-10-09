@@ -1,716 +1,295 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <title>Stop Trusting One AI. Ask Them All</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet"/>
-<script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
-            display: ['"Plus Jakarta Sans"', 'sans-serif']
-          },
-          colors: {
-            brandPink: '#FBAEBE',
-            brandPinkHover: '#f89ab0',
-            brandBlue: '#3B82F6',
-            brandMint: '#A7F3D0',
-            brandCoral: '#FF5C5C',
-            brandYellow: '#FCD34D'
-          }
-        }
-      }
-    };
-</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet"/>
 <style>
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-      background-color: #ffffff;
-      color: #111827;
-      overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
-    }
-    .crisp-border { border: 2px solid #111827; }
-    .crisp-border-thick { border: 2.5px solid #111827; }
+:root{--ink:#000;--paper:#fff;--grey:#5c5c5c;--soft:#f2f2f2;--pk:#FBAEBE;--line:2px solid #000;--pad:clamp(16px,4vw,48px)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font:17px/1.5 'Archivo',system-ui,Arial,sans-serif;background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:var(--pk)}a{color:inherit}button,input{font:inherit;color:inherit;border-radius:0}button{cursor:pointer;background:none;border:0}
+:focus-visible{outline:3px solid #000;outline-offset:2px}
+.wrap{max-width:1280px;margin:0 auto;padding:0 var(--pad)}.hidden{display:none!important}.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.btn{display:inline-block;background:#000;color:#fff;border:var(--line);padding:10px 22px;font-weight:800;font-size:.95rem;text-decoration:none;white-space:nowrap;transition:.12s}
+.btn:hover{background:var(--pk);color:#000}.btn:active{transform:translateY(2px)}.btn.ghost{background:#fff;color:#000}.btn.ghost:hover{background:var(--pk)}
+header{position:sticky;top:0;z-index:40;background:#fff;border-bottom:var(--line)}
+#prog{position:absolute;left:0;bottom:-2px;height:4px;width:0;background:#000}
+.bar{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{font-weight:900;font-size:1.5rem;letter-spacing:-.04em;text-decoration:none}
+.nav{display:flex;align-items:center;gap:clamp(16px,3vw,36px)}.nav a{font-weight:700;font-size:.95rem;text-decoration:none;border-bottom:2px solid transparent}.nav a:hover{border-color:#000}
+#menuToggle{display:none;width:44px;height:44px;border:var(--line);align-items:center;justify-content:center}
+#mobileNav{max-height:0;overflow:hidden;transition:max-height .3s}#mobileNav.open{max-height:320px;border-top:var(--line)}
+#mobileNav a{display:block;padding:16px var(--pad);font-weight:700;text-decoration:none;border-bottom:1px solid #000}
+@media(max-width:760px){.nav a{display:none}#menuToggle{display:flex}}@media(min-width:761px){#mobileNav{display:none}}
 
-    /* ---------- focus visibility ---------- */
-    a:focus-visible, button:focus-visible, input:focus-visible {
-      outline: 2.5px solid #111827;
-      outline-offset: 2px;
-      border-radius: 2px;
-    }
+/* hero */
+.hero{border-bottom:var(--line);padding:clamp(40px,7vw,96px) 0 0}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:var(--pad);align-items:end;padding-bottom:clamp(36px,5vw,64px)}
+h1{font-weight:900;font-stretch:80%;letter-spacing:-.045em;line-height:.9;font-size:clamp(3rem,9.5vw,8.5rem)}
+h1 span{display:block;overflow:hidden}h1 i{display:block;font-style:normal;animation:up .7s cubic-bezier(.2,.8,.2,1) both}
+h1 span:nth-child(2) i{animation-delay:.12s}h1 span:nth-child(3) i{animation-delay:.24s}
+@keyframes up{from{transform:translateY(110%)}to{transform:none}}
+.lead{margin-top:24px;max-width:38ch;font-size:clamp(1.05rem,2vw,1.25rem);line-height:1.4;color:var(--grey)}
+#askForm{margin-top:32px;display:flex;border:var(--line);background:#fff}
+#askInput{flex:1;min-width:0;border:0;padding:16px 18px;font-size:1.05rem;background:#fff}#askInput:focus-visible{outline:0;background:var(--soft)}
+#askForm:focus-within{outline:3px solid #000;outline-offset:2px}
+#askBtn{background:#000;color:#fff;padding:0 30px;font-weight:800;border-left:var(--line);transition:.12s}#askBtn:hover{background:var(--pk);color:#000}#askBtn:disabled{opacity:.5;cursor:wait}
+#askError{margin-top:10px;font-weight:700;font-size:.9rem}.shake{animation:sh .4s}@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.note-box{margin-top:20px;border:var(--line);padding:14px 18px;font-weight:700;font-size:.95rem}
+.dot{display:inline-block;width:8px;height:8px;background:#000;margin-left:4px;animation:dp 1.1s infinite}.dot:nth-child(3){animation-delay:.15s}.dot:nth-child(4){animation-delay:.3s}@keyframes dp{50%{opacity:.2}}
+/* live race */
+.race{border:var(--line);background:#fff;animation:up .8s .3s cubic-bezier(.2,.8,.2,1) both}
+.race-top{display:flex;justify-content:space-between;background:#000;color:#fff;padding:10px 14px;font-weight:700;font-size:.85rem}
+.race-top b{display:flex;align-items:center;gap:8px}.race-top b::before{content:"";width:9px;height:9px;background:var(--pk);animation:dp 1s infinite}
+.lane{display:grid;grid-template-columns:92px 1fr 48px;align-items:center;gap:10px;padding:9px 14px;border-top:1px solid #000;font-size:.85rem;font-weight:700}
+.lane .t{height:14px;border:var(--line);overflow:hidden}.lane .t i{display:block;height:100%;background:#000;width:0;animation:fill var(--d) steps(14) infinite}
+.lane em{font-style:normal;text-align:right;font-variant-numeric:tabular-nums;color:var(--grey)}
+@keyframes fill{0%{width:0;background:#000}70%,90%{width:100%;background:#000}95%{width:100%;background:var(--pk)}100%{width:0}}
+.race-sum{border-top:var(--line);background:var(--pk);padding:12px 14px;font-weight:800;font-size:.95rem}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}}
+/* ticker */
+.ticker{border-top:var(--line);background:#000;color:#fff;overflow:hidden;white-space:nowrap}
+.ticker div{display:inline-flex;animation:tk 28s linear infinite;padding:14px 0}.ticker:hover div{animation-play-state:paused}
+.ticker span{font-weight:900;font-stretch:80%;font-size:clamp(1.3rem,3vw,2rem);letter-spacing:-.02em;padding:0 28px}.ticker span::after{content:"/";margin-left:56px;color:var(--pk)}
+@keyframes tk{to{transform:translateX(-50%)}}
+/* sections */
+.blk{padding:clamp(56px,9vw,120px) 0;border-bottom:var(--line)}
+.sh{display:grid;grid-template-columns:1fr 1fr;gap:var(--pad);align-items:end;margin-bottom:clamp(28px,5vw,56px)}
+h2{font-weight:900;font-stretch:80%;letter-spacing:-.04em;line-height:.95;font-size:clamp(2.2rem,6vw,5rem);max-width:13ch}
+.sh p{color:var(--grey);max-width:40ch;justify-self:end}@media(max-width:760px){.sh{grid-template-columns:1fr}.sh p{justify-self:start}}
+.rv{opacity:0;transform:translateY(24px);transition:.6s cubic-bezier(.2,.8,.2,1)}.rv.in{opacity:1;transform:none}
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:var(--line)}
+.stats div{padding:clamp(24px,4vw,48px) 16px clamp(24px,4vw,48px) 0}.stats div+div{border-left:var(--line);padding-left:clamp(16px,2.5vw,32px)}
+.stats b{display:block;font-weight:900;font-stretch:75%;font-size:clamp(3rem,8vw,7rem);letter-spacing:-.05em;line-height:.9}
+.stats span{display:block;margin-top:10px;font-weight:600;font-size:.95rem;color:var(--grey);max-width:18ch}
+@media(max-width:760px){.stats{grid-template-columns:1fr 1fr}.stats div:nth-child(3){border-left:0;padding-left:0}.stats div:nth-child(n+3){border-top:var(--line)}}
+/* explorer */
+.ex{display:grid;grid-template-columns:.8fr 1.2fr;border:var(--line)}
+.ex-l{border-right:var(--line)}.chip{display:block;width:100%;text-align:left;padding:20px 22px;font-weight:800;font-size:1.1rem;letter-spacing:-.02em;border-bottom:var(--line);transition:.12s}
+.chip:last-child{border-bottom:0}.chip:hover{background:var(--soft)}.chip[aria-pressed=true]{background:#000;color:#fff}
+.ex-r{padding:clamp(18px,3vw,32px)}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:.8rem;font-weight:700;margin-bottom:14px}.legend i{display:inline-block;width:12px;height:12px;border:var(--line);margin-right:6px;vertical-align:-1px}
+.grid8{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:var(--line);border-left:var(--line)}
+.sq{border-right:var(--line);border-bottom:var(--line);padding:14px 10px;min-height:92px;font-weight:800;font-size:.85rem;transition:background .35s,color .35s;display:flex;flex-direction:column;justify-content:space-between}
+.sq small{font-weight:500;font-size:.75rem;opacity:.85}.sq[data-s=y]{background:#000;color:#fff}.sq[data-s=m]{background:var(--pk)}.sq[data-s=n]{background:#fff}
+#exSum{margin-top:18px;font-weight:700;font-size:1.1rem;line-height:1.3;letter-spacing:-.01em}
+.meter{margin-top:14px;height:14px;border:var(--line);display:flex}.meter i{display:block;height:100%;transition:width .5s}
+@media(max-width:860px){.ex{grid-template-columns:1fr}.ex-l{border-right:0;border-bottom:var(--line)}}
+/* demo */
+.win{border:var(--line)}.win-top{background:#000;color:#fff;padding:12px 18px;font-weight:700;font-size:.9rem;display:flex;justify-content:space-between}
+.win-body{padding:clamp(18px,3vw,36px);min-height:430px}
+.qrow{display:flex;border:var(--line)}.q{flex:1;padding:14px 16px;font-weight:600;min-height:52px}.go{padding:14px 26px;font-weight:800;border-left:var(--line);transition:.12s}.go.pressed{background:var(--pk)}
+.caret{display:inline-block;width:2px;height:1em;background:#000;vertical-align:-2px;animation:bl 1s steps(1) infinite}@keyframes bl{50%{opacity:0}}
+#dwait{margin-top:20px;font-weight:700;font-size:.95rem;transition:opacity .2s}
+.dgrid{margin-top:12px;display:grid;grid-template-columns:repeat(4,1fr);border-top:var(--line);border-left:var(--line)}
+.dcard,#dsum{opacity:0;transform:translateY(10px);transition:.35s}.dcard{padding:14px;border-right:var(--line);border-bottom:var(--line)}
+.who{font-weight:800;font-size:.8rem;color:var(--grey)}.t{margin-top:4px;font-size:.9rem;line-height:1.4;font-weight:500}
+#dsum{margin-top:16px;padding:16px 18px;border:var(--line);background:var(--pk)}#dsum .who{color:#000}#dsum .t{font-weight:600}
+.ctrl{display:flex;align-items:center;gap:16px;border-top:var(--line);padding:12px 18px}
+#playBtn{width:40px;height:40px;border:var(--line);display:flex;align-items:center;justify-content:center}#playBtn:hover{background:var(--pk)}
+#dtrack{flex:1;height:14px;border:var(--line);cursor:pointer}#dbar{height:100%;background:#000;width:0}#dtime{width:40px;text-align:right;font-weight:700;font-size:.85rem}
+@media(max-width:760px){.dgrid{grid-template-columns:1fr 1fr}}
+/* how */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);border:var(--line)}.steps>div{padding:clamp(20px,3vw,36px);position:relative;overflow:hidden;transition:background .2s}
+.steps>div+div{border-left:var(--line)}.steps>div:hover{background:var(--pk)}
+.steps .n{font-weight:900;font-stretch:75%;font-size:clamp(5rem,12vw,10rem);letter-spacing:-.06em;line-height:.8}
+.steps h3{margin-top:clamp(20px,4vw,48px);font-weight:800;font-size:1.4rem;letter-spacing:-.02em}.steps p{margin-top:8px;color:#333;max-width:30ch}
+.steps .ln{position:absolute;left:0;bottom:0;height:6px;background:#000;width:0;transition:width 1.2s .2s}.rv.in .ln{width:100%}
+@media(max-width:760px){.steps{grid-template-columns:1fr}.steps>div+div{border-left:0;border-top:var(--line)}}
+/* product */
+#modelToggles{display:flex;flex-wrap:wrap;border-left:var(--line);border-top:var(--line);width:fit-content;max-width:100%}
+.model-toggle{border-right:var(--line);border-bottom:var(--line);padding:12px 20px;font-weight:800;background:#000;color:#fff;transition:.12s}
+.model-toggle[data-model=off]{background:#fff;color:#888;text-decoration:line-through}.model-toggle:hover{background:var(--pk);color:#000;text-decoration:none}
+.hint{margin-top:12px;color:var(--grey);font-size:.9rem}
+.feats{margin-top:clamp(40px,6vw,72px);display:grid;grid-template-columns:1fr 1fr;border:var(--line)}.feats>div{padding:clamp(20px,3vw,36px)}
+.feats>div:nth-child(even){border-left:var(--line)}.feats>div:nth-child(n+3){border-top:var(--line)}
+.feats h3{font-weight:800;font-size:1.3rem;letter-spacing:-.02em;margin-top:22px}.feats p{margin-top:6px;color:var(--grey);max-width:34ch}
+.viz{height:72px;display:flex;align-items:flex-end;gap:6px}.viz.b i{flex:1;background:#000;animation:gr 2.4s ease-in-out infinite alternate;transform-origin:bottom}
+@keyframes gr{from{transform:scaleY(.25)}}
+.gauge{position:relative;height:72px;border-bottom:var(--line);width:100%}.gauge i{position:absolute;left:0;bottom:0;width:100%;height:100%;background:linear-gradient(90deg,#fff,var(--pk))}.gauge u{position:absolute;bottom:-2px;width:6px;height:100%;background:#000;animation:nd 3.2s ease-in-out infinite alternate}
+@keyframes nd{from{left:4%}to{left:94%}}
+.thread{display:grid;gap:6px}.thread p{border:var(--line);padding:7px 10px;font-weight:700;font-size:.8rem;width:70%;color:#000;margin:0;animation:bu 3.6s ease-in-out infinite}.thread p:nth-child(2){margin-left:auto;background:var(--pk);animation-delay:.4s}.thread p:nth-child(3){background:#000;color:#fff;animation-delay:.8s}
+@keyframes bu{50%{transform:translateX(10px)}}
+.sw{display:grid;gap:8px}.sw div{display:flex;align-items:center;gap:10px;font-weight:700;font-size:.8rem}.sw b{width:40px;height:20px;border:var(--line);padding:2px;display:block}.sw b::after{content:"";display:block;width:12px;height:12px;background:#000;animation:kn 3s infinite}.sw div:nth-child(2) b::after{animation-delay:.5s}.sw div:nth-child(3) b::after{animation-delay:1s}
+@keyframes kn{0%,35%{transform:none}50%,85%{transform:translateX(18px)}}
+@media(max-width:760px){.feats{grid-template-columns:1fr}.feats>div:nth-child(even){border-left:0}.feats>div+div{border-top:var(--line)}}
+/* use cases */
+.uc{border-top:var(--line)}.uc a{display:grid;grid-template-columns:60px 1fr auto;gap:16px;align-items:center;padding:20px 0;border-bottom:var(--line);text-decoration:none;transition:padding .25s,background .25s}
+.uc a:hover{background:var(--pk);padding-left:18px;padding-right:18px}.uc b{font-size:.9rem}.uc strong{font-weight:900;font-stretch:80%;font-size:clamp(1.5rem,4.2vw,3.4rem);letter-spacing:-.035em;line-height:1}
+.uc span{font-weight:700;font-size:.9rem;opacity:0;transform:translateX(-10px);transition:.25s;max-width:26ch;text-align:right}.uc a:hover span{opacity:1;transform:none}
+@media(max-width:760px){.uc a{grid-template-columns:36px 1fr}.uc span{display:none}}
+/* blog */
+.bl{border-top:var(--line)}.bi{border-bottom:var(--line)}.bt{width:100%;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;padding:24px 0}
+.bt h3{font-weight:800;font-size:clamp(1.15rem,2.4vw,1.7rem);letter-spacing:-.025em;line-height:1.2}.bt:hover h3{text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:4px}
+.chev{transition:transform .25s;flex-shrink:0}.chev.open{transform:rotate(90deg)}
+.ab{max-height:0;overflow:hidden;transition:max-height .3s}.ab.open{max-height:240px}.ab p{padding:0 0 24px;color:var(--grey);max-width:56ch}
+/* cta + footer */
+.cta{background:#000;color:#fff;padding:clamp(56px,9vw,120px) 0 0;overflow:hidden}.cta h2{font-size:clamp(2.4rem,8vw,7rem);max-width:12ch}.cta p{margin-top:20px;color:#bdbdbd;max-width:36ch}
+.cta .btn{margin-top:32px;background:#fff;color:#000;border-color:#fff;padding:16px 30px;font-size:1.05rem}.cta .btn:hover{background:var(--pk)}.cta :focus-visible{outline-color:#fff}
+.word{font-weight:900;font-stretch:62%;font-size:25.5vw;line-height:.74;letter-spacing:-.05em;margin-top:clamp(40px,6vw,80px);white-space:nowrap;color:transparent;-webkit-text-stroke:2px #fff;transition:color .3s;user-select:none}.word:hover{color:var(--pk);-webkit-text-stroke-color:var(--pk)}
+footer .row{display:flex;flex-wrap:wrap;gap:24px 48px;justify-content:space-between;align-items:center;padding:28px 0}
+footer nav{display:flex;gap:28px}footer nav a{font-weight:700;font-size:.95rem;text-decoration:none}footer nav a:hover{text-decoration:underline;text-decoration-thickness:2px}
+.acts{display:flex;gap:12px}.acts .btn{padding:8px 16px;font-size:.85rem}#topBtn{width:40px;height:40px;border:var(--line);display:flex;align-items:center;justify-content:center}#topBtn:hover{background:var(--pk)}
+.legal{border-top:var(--line);padding:16px 0 24px;font-size:.85rem;color:var(--grey)}
+#toast{position:fixed;left:50%;bottom:24px;z-index:50;background:#000;color:#fff;padding:12px 22px;font-weight:700;font-size:.9rem;outline:2px solid #fff;transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:.25s}#toast.show{transform:translate(-50%,0);opacity:1}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}.rv{opacity:1;transform:none}}
 
-    /* ---------- entrance sequence (hero illustration, plays once on load) ---------- */
-    .enter-piece {
-      opacity: 0;
-      transform: translateY(14px) scale(0.96);
-      animation: pieceIn 0.7s cubic-bezier(.21,.9,.32,1) forwards;
-    }
-    @keyframes pieceIn {
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-    .enter-1 { animation-delay: .05s; }
-    .enter-2 { animation-delay: .15s; }
-    .enter-3 { animation-delay: .25s; }
-    .enter-4 { animation-delay: .35s; }
-    .enter-5 { animation-delay: .45s; }
-    .enter-6 { animation-delay: .2s; }
-    .enter-7 { animation-delay: .3s; }
-    .enter-8 { animation-delay: .4s; }
-    .enter-9 { animation-delay: .5s; }
-    .enter-10 { animation-delay: .55s; }
+.side{display:grid}.hero-img{margin:0;border:var(--line);border-bottom:0;position:relative;overflow:hidden;background:var(--pk);animation:up .8s .2s cubic-bezier(.2,.8,.2,1) both}
+.hero-img svg{display:block;width:100%;aspect-ratio:4/3}.drift{animation:dr 9s ease-in-out infinite alternate}@keyframes dr{to{transform:translateX(-12px)}}
+.hero-img figcaption{position:absolute;left:0;bottom:0;background:#000;color:#fff;padding:8px 14px;font-weight:800;font-size:.85rem}
+.strip{display:grid;grid-template-columns:repeat(3,1fr);border-top:var(--line);border-bottom:var(--line)}.strip figure{margin:0;border-right:var(--line)}.strip figure:last-child{border-right:0}
+.strip svg{display:block;width:100%;aspect-ratio:4/3;border-bottom:var(--line)}.strip figcaption{padding:16px 20px 22px}.strip h3{font-weight:900;font-stretch:80%;font-size:1.6rem;letter-spacing:-.03em}.strip p{color:var(--grey);font-size:.95rem}
+.btn,#askBtn,.go{min-height:44px}
+@media(hover:none){.steps>div:hover{background:none}.uc a:hover{padding:20px 0;background:none}.model-toggle:hover{background:#000;color:#fff}.model-toggle[data-model=off]:hover{background:#fff;color:#888;text-decoration:line-through}}
+@media(max-width:760px){
+body{font-size:16px}.wrap{padding:0 18px}.bar{height:56px}.logo{font-size:1.35rem}
+.hero{padding-top:24px}.hero-grid{gap:28px;padding-bottom:0}h1{font-size:clamp(2.6rem,15.5vw,4.4rem)}.lead{margin-top:16px}
+#askForm{flex-direction:column;margin-top:22px}#askBtn{border-left:0;border-top:var(--line);padding:16px}#askInput{padding:16px;font-size:16px}
+.side{margin:0 -18px}.hero-img{border-left:0;border-right:0}.race{border-left:0;border-right:0;border-bottom:0}.lane{grid-template-columns:76px 1fr 38px;gap:8px;padding:8px 14px;font-size:.8rem}
+.race-sum{font-size:.85rem}.ticker span{padding:0 18px}.ticker span::after{margin-left:36px}
+.strip{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}.strip figure{flex:0 0 78%;scroll-snap-align:start}
+.stats b{font-size:clamp(3rem,17vw,4.5rem)}.stats div{padding:22px 12px 22px 0}.blk{padding:52px 0}.sh{gap:14px;margin-bottom:26px}h2{font-size:clamp(2rem,11vw,3rem)}
+.grid8{grid-template-columns:1fr 1fr}.sq{min-height:74px}.chip{padding:16px 18px;font-size:1rem}.ex-r{padding:16px}#exSum{font-size:1rem}
+.win-body{min-height:0;padding:14px}.go{padding:12px 18px}.q{padding:12px;font-size:.95rem}.dcard{padding:12px}.win-top span:last-child{display:none}.ctrl{padding:10px 14px;gap:12px}
+.steps .n{font-size:5.5rem}.steps h3{margin-top:18px}
+#modelToggles{width:100%}.model-toggle{flex:1 1 50%;padding:14px 8px;text-align:center}
+.feats>div{padding:20px}
+.uc a{grid-template-columns:30px 1fr;row-gap:4px;padding:18px 0}.uc strong{font-size:1.6rem}.uc span{display:block;grid-column:2;opacity:1;transform:none;text-align:left;max-width:none;font-weight:500;color:var(--grey)}
+.bt{padding:20px 0}.cta{padding-top:52px}.cta h2{font-size:clamp(2.2rem,12vw,3.4rem)}.cta .btn{width:100%;text-align:center}
+footer .row{flex-direction:column;align-items:flex-start;gap:20px;padding-bottom:max(28px,env(safe-area-inset-bottom))}footer nav{flex-wrap:wrap;gap:18px}
+#toast{width:calc(100% - 36px);text-align:center;bottom:max(16px,env(safe-area-inset-bottom))}
+}
+</style></head>
+<body>
+<header><div id="prog"></div><div class="wrap bar"><a class="logo" href="#top">Remagine</a>
+<div class="nav"><a href="#demo">Demo</a><a href="#product">Product</a><a href="/history.html">All chats</a><a href="#blogs">Blogs</a><button id="askAiTopBtn" class="btn">Ask AI</button>
+<button id="menuToggle" aria-expanded="false" aria-label="Open menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button></div></div>
+<div id="mobileNav"><a href="#demo">Demo</a><a href="#product">Product</a><a href="/history.html">All chats</a><a href="#blogs">Blogs</a></div></header>
+<main id="top">
+<section class="hero" id="signup"><div class="wrap"><div class="hero-grid">
+<div><h1><span><i>Stop Trusting</i></span><span><i>One AI.</i></span><span><i>Ask Them All</i></span></h1>
+<p class="lead">Eight leading AI models answer at once. You see where they agree, where they split, and one clear summary.</p>
+<form id="askForm" novalidate><label class="sr" for="askInput">Ask all AI at once</label><input id="askInput" type="text" placeholder="Ask all AI at once" autocomplete="off"/><button id="askBtn" type="submit"><span id="askBtnLabel">Ask</span></button></form>
+<p id="askError" class="hidden">Type a question first. The models need something to answer.</p><div id="resultsPanel" class="hidden"></div></div>
+<div class="side"><figure class="hero-img"><svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Halftone sphere illustration"><rect width="400" height="300" fill="#FBAEBE"/><g class="drift" stroke="#000" stroke-linecap="round" fill="none"><path d="M161 42h0M175 42h0M189 42h0M203 42h0M196 56h0M210 56h0M119 70h0M189 70h0M203 70h0M112 84h0M182 84h0M196 84h0M210 84h0M105 98h0M175 98h0M189 98h0M112 112h0M126 112h0M140 112h0M154 112h0M168 112h0M182 112h0M105 126h0M119 126h0M133 126h0M147 126h0M161 126h0M7 210h0M21 210h0M35 210h0M49 210h0M63 210h0M77 210h0M91 210h0M105 210h0M119 210h0M287 210h0M301 210h0M315 210h0M329 210h0M343 210h0M357 210h0M371 210h0M385 210h0M399 210h0M0 224h0M14 224h0M28 224h0M42 224h0M56 224h0M70 224h0M84 224h0M98 224h0M112 224h0M126 224h0M266 224h0M280 224h0M294 224h0M308 224h0M322 224h0M336 224h0M350 224h0M364 224h0M378 224h0M392 224h0M7 238h0M21 238h0M35 238h0M49 238h0M63 238h0M77 238h0M91 238h0M105 238h0M119 238h0M133 238h0M147 238h0M245 238h0M259 238h0M273 238h0M287 238h0M301 238h0M315 238h0M329 238h0M343 238h0M357 238h0M371 238h0M385 238h0M399 238h0M0 252h0M14 252h0M28 252h0M42 252h0M56 252h0M70 252h0M84 252h0M98 252h0M112 252h0M336 252h0M350 252h0M364 252h0M378 252h0M392 252h0M7 266h0M21 266h0M35 266h0M49 266h0M63 266h0M77 266h0M91 266h0M371 266h0M385 266h0M399 266h0" stroke-width="2.1"/><path d="M217 42h0M224 56h0M217 70h0M231 70h0M224 84h0M203 98h0M217 98h0M98 112h0M196 112h0M210 112h0M175 126h0M189 126h0M203 126h0M98 140h0M112 140h0M126 140h0M140 140h0M154 140h0M168 140h0M182 140h0M119 154h0M133 154h0M147 154h0M161 154h0M0 280h0M14 280h0M28 280h0M42 280h0M56 280h0M70 280h0M84 280h0M98 280h0M364 280h0M378 280h0M392 280h0M7 294h0M21 294h0M35 294h0M49 294h0M63 294h0M77 294h0M91 294h0M105 294h0M119 294h0M133 294h0M147 294h0M161 294h0M301 294h0M315 294h0M329 294h0M343 294h0M357 294h0M371 294h0M385 294h0M399 294h0" stroke-width="4.2"/><path d="M231 42h0M238 56h0M245 70h0M238 84h0M252 84h0M231 98h0M245 98h0M224 112h0M238 112h0M217 126h0M231 126h0M196 140h0M210 140h0M105 154h0M175 154h0M189 154h0M203 154h0M112 168h0M126 168h0M140 168h0M154 168h0M168 168h0M182 168h0M126 252h0M140 252h0M154 252h0M168 252h0M182 252h0M196 252h0M210 252h0M224 252h0M238 252h0M252 252h0M266 252h0M280 252h0M294 252h0M308 252h0M322 252h0M105 266h0M119 266h0M133 266h0M147 266h0M161 266h0M175 266h0M189 266h0M203 266h0M217 266h0M231 266h0M245 266h0M259 266h0M273 266h0M287 266h0M301 266h0M315 266h0M329 266h0M343 266h0M357 266h0M112 280h0M126 280h0M140 280h0M154 280h0M168 280h0M182 280h0M196 280h0M210 280h0M224 280h0M238 280h0M252 280h0M266 280h0M280 280h0M294 280h0M308 280h0M322 280h0M336 280h0M350 280h0M175 294h0M189 294h0M203 294h0M217 294h0M231 294h0M245 294h0M259 294h0M273 294h0M287 294h0" stroke-width="6.3"/><path d="M245 42h0M252 56h0M259 70h0M266 84h0M259 98h0M252 112h0M245 126h0M224 140h0M238 140h0M217 154h0M98 168h0M196 168h0M210 168h0M119 182h0M133 182h0M147 182h0M161 182h0M175 182h0M189 182h0" stroke-width="8.4"/><path d="M266 56h0M273 70h0M273 98h0M266 112h0M259 126h0M252 140h0M231 154h0M245 154h0M224 168h0M105 182h0M203 182h0M217 182h0M112 196h0M126 196h0M140 196h0M154 196h0M168 196h0M182 196h0M196 196h0" stroke-width="10.5"/><path d="M280 84h0M287 98h0M280 112h0M273 126h0M266 140h0M259 154h0M238 168h0M252 168h0M231 182h0M210 196h0M133 210h0M147 210h0M161 210h0M175 210h0M189 210h0" stroke-width="12.6"/><path d="M294 112h0M287 126h0M301 126h0M280 140h0M294 140h0M273 154h0M287 154h0M301 154h0M266 168h0M280 168h0M294 168h0M245 182h0M259 182h0M273 182h0M287 182h0M224 196h0M238 196h0M252 196h0M266 196h0M280 196h0M203 210h0M217 210h0M231 210h0M245 210h0M259 210h0M273 210h0M140 224h0M154 224h0M168 224h0M182 224h0M196 224h0M210 224h0M224 224h0M238 224h0M252 224h0M161 238h0M175 238h0M189 238h0M203 238h0M217 238h0M231 238h0" stroke-width="14.7"/></g></svg><figcaption>One question. Eight answers.</figcaption></figure><div class="race" aria-label="Live comparison"><div class="race-top"><b>Live</b><span>8 models, 1 question</span></div>
+<div id="lanes"></div><div class="race-sum">Summary ready: models agree on 6 of 8 points.</div></div></div>
+</div></div>
+<div class="ticker" aria-hidden="true"><div id="tk"></div></div></section>
 
-    /* ---------- gentle ambient motion, subtle & slow ---------- */
-    .float-slow { animation: floatY 5.5s ease-in-out infinite; transform-origin: center; }
-    @keyframes floatY {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-7px); }
-    }
-    .spin-slow { animation: spin 9s linear infinite; transform-origin: center; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .twinkle { animation: twinkle 2.4s ease-in-out infinite; transform-origin: center; }
-    @keyframes twinkle {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: .45; transform: scale(.75); }
-    }
+<section class="strip"><figure><svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Halftone wave illustration"><rect width="400" height="300" fill="#fff"/><g class="drift" stroke="#000" stroke-linecap="round" fill="none"><path d="M288 0h0M400 0h0M200 16h0M224 32h0M248 48h0M352 64h0M8 80h0M152 80h0M312 112h0M64 128h0M80 128h0M96 128h0M320 128h0M328 144h0M336 160h0M184 176h0M344 176h0M408 176h0M56 208h0M104 208h0M32 224h0M128 224h0M16 256h0M144 256h0M360 272h0M16 288h0M144 288h0" stroke-width="2.1"/><path d="M0 0h0M160 0h0M320 32h0M272 64h0M360 80h0M304 96h0M48 128h0M112 128h0M224 128h0M8 144h0M152 144h0M176 160h0M400 160h0M352 192h0M72 208h0M88 208h0M24 240h0M136 240h0M280 240h0M360 240h0M224 256h0M280 272h0M224 288h0" stroke-width="4.2"/><path d="M176 0h0M240 32h0M24 80h0M136 80h0M296 80h0M176 96h0M368 96h0M200 112h0M376 112h0M384 128h0M232 144h0M392 144h0M216 208h0M360 208h0M272 224h0M72 272h0M88 272h0" stroke-width="6.3"/><path d="M272 0h0M216 16h0M296 16h0M264 48h0M328 48h0M40 80h0M120 80h0M32 128h0M128 128h0M240 160h0M200 176h0M248 176h0M208 192h0M256 192h0M264 208h0M408 208h0M48 224h0M112 224h0M224 224h0M368 224h0M80 256h0M272 256h0M368 256h0M24 272h0M136 272h0M232 272h0M272 288h0M368 288h0" stroke-width="8.4"/><path d="M192 0h0M232 16h0M256 32h0M304 32h0M288 64h0M336 64h0M56 80h0M72 80h0M88 80h0M104 80h0M0 96h0M160 96h0M184 112h0M328 112h0M16 128h0M144 128h0M208 128h0M336 128h0M168 144h0M344 144h0M192 160h0M352 160h0M360 176h0M392 176h0M400 192h0M40 240h0M120 240h0M232 240h0M408 240h0M32 256h0M128 256h0M376 272h0M408 272h0M32 288h0M80 288h0M128 288h0" stroke-width="10.5"/><path d="M208 0h0M256 0h0M280 16h0M280 48h0M312 48h0M312 80h0M344 80h0M16 96h0M144 96h0M320 96h0M352 96h0M40 112h0M56 112h0M72 112h0M88 112h0M104 112h0M120 112h0M360 112h0M0 128h0M160 128h0M368 128h0M184 144h0M216 144h0M376 144h0M224 160h0M384 160h0M224 192h0M368 192h0M232 208h0M376 208h0M64 224h0M80 224h0M96 224h0M256 224h0M400 224h0M264 240h0M376 240h0M64 256h0M96 256h0M240 256h0M400 256h0M56 272h0M104 272h0M264 272h0M64 288h0M96 288h0M240 288h0M400 288h0" stroke-width="12.6"/><path d="M224 0h0M240 0h0M248 16h0M264 16h0M272 32h0M288 32h0M296 48h0M304 64h0M320 64h0M328 80h0M32 96h0M48 96h0M64 96h0M80 96h0M96 96h0M112 96h0M128 96h0M336 96h0M8 112h0M24 112h0M136 112h0M152 112h0M168 112h0M344 112h0M176 128h0M192 128h0M352 128h0M200 144h0M360 144h0M208 160h0M368 160h0M216 176h0M232 176h0M376 176h0M240 192h0M384 192h0M248 208h0M392 208h0M240 224h0M384 224h0M56 240h0M72 240h0M88 240h0M104 240h0M248 240h0M392 240h0M48 256h0M112 256h0M256 256h0M384 256h0M40 272h0M120 272h0M248 272h0M392 272h0M48 288h0M112 288h0M256 288h0M384 288h0" stroke-width="14.7"/></g></svg><figcaption><h3>Ask once</h3><p>One box sends your question everywhere.</p></figcaption></figure><figure><svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Halftone noise illustration"><rect width="400" height="300" fill="#FBAEBE"/><g class="drift" stroke="#000" stroke-linecap="round" fill="none"><path d="M140 0h0M240 0h0M10 20h0M350 20h0M260 40h0M270 60h0M310 60h0M370 60h0M410 60h0M0 80h0M320 80h0M30 100h0M90 100h0M110 100h0M140 120h0M210 140h0M410 140h0M40 160h0M60 160h0M220 160h0M280 160h0M350 180h0M370 180h0M360 200h0M50 220h0M410 220h0M80 240h0M180 240h0M200 240h0M280 240h0M360 240h0M130 260h0M210 260h0M250 260h0M270 260h0M330 260h0M390 260h0M140 280h0M340 280h0M70 300h0M210 300h0" stroke-width="2.1"/><path d="M80 0h0M160 0h0M380 0h0M90 20h0M310 20h0M40 40h0M60 40h0M10 60h0M50 60h0M210 60h0M100 80h0M300 80h0M360 80h0M290 100h0M120 120h0M320 120h0M0 160h0M30 180h0M130 180h0M190 180h0M230 180h0M330 180h0M80 200h0M100 200h0M200 200h0M280 200h0M230 220h0M20 240h0M100 240h0M120 240h0M320 240h0M10 260h0M180 280h0M360 280h0M50 300h0M270 300h0" stroke-width="4.2"/><path d="M100 0h0M300 0h0M340 0h0M70 20h0M270 20h0M330 20h0M200 40h0M340 40h0M30 60h0M330 60h0M350 60h0M140 80h0M180 80h0M280 80h0M340 80h0M350 100h0M180 120h0M280 120h0M110 140h0M240 160h0M50 180h0M170 180h0M310 180h0M140 200h0M380 200h0M330 220h0M0 240h0M160 240h0M70 260h0M90 260h0M110 260h0M170 260h0M350 260h0M0 280h0M100 280h0M160 280h0M200 280h0M320 280h0" stroke-width="6.3"/><path d="M60 0h0M180 0h0M50 20h0M150 20h0M170 20h0M190 20h0M230 20h0M250 20h0M100 40h0M120 40h0M140 40h0M160 40h0M180 40h0M380 40h0M400 40h0M90 60h0M40 80h0M200 80h0M230 100h0M270 100h0M330 100h0M400 120h0M70 140h0M270 140h0M310 140h0M120 160h0M160 160h0M200 160h0M320 160h0M70 180h0M110 180h0M150 180h0M130 220h0M190 220h0M210 220h0M270 220h0M390 220h0M40 240h0M260 240h0M300 240h0M400 240h0M20 280h0M80 280h0M120 280h0M400 280h0M10 300h0M90 300h0M130 300h0M190 300h0M230 300h0M290 300h0" stroke-width="8.4"/><path d="M120 0h0M360 0h0M30 20h0M390 20h0M280 40h0M300 40h0M130 60h0M230 60h0M250 60h0M220 80h0M240 80h0M130 100h0M170 100h0M310 100h0M160 120h0M200 120h0M240 120h0M360 120h0M130 140h0M330 140h0M370 140h0M300 160h0M360 160h0M390 180h0M0 200h0M160 200h0M240 200h0M340 200h0M400 200h0M70 220h0M150 220h0M30 260h0M290 260h0M370 260h0M60 280h0M300 280h0M250 300h0M350 300h0M390 300h0M410 300h0" stroke-width="10.5"/><path d="M220 0h0M280 0h0M400 0h0M110 20h0M130 20h0M290 20h0M410 20h0M240 40h0M170 60h0M20 80h0M400 80h0M70 100h0M210 100h0M20 120h0M80 120h0M220 120h0M300 120h0M90 140h0M170 140h0M350 140h0M140 160h0M380 160h0M210 180h0M250 180h0M270 180h0M20 200h0M60 200h0M120 200h0M220 200h0M260 200h0M300 200h0M320 200h0M10 220h0M90 220h0M250 220h0M290 220h0M350 220h0M370 220h0M220 240h0M380 240h0M110 300h0M330 300h0" stroke-width="12.6"/><path d="M20 0h0M200 0h0M260 0h0M320 0h0M370 20h0M80 40h0M220 40h0M320 40h0M360 40h0M70 60h0M110 60h0M120 80h0M380 80h0M150 100h0M190 100h0M250 100h0M390 100h0M410 100h0M0 120h0M260 120h0M340 120h0M380 120h0M50 140h0M190 140h0M230 140h0M290 140h0M390 140h0M20 160h0M340 160h0M400 160h0M10 180h0M290 180h0M40 200h0M110 220h0M170 220h0M310 220h0M60 240h0M50 260h0M310 260h0M40 280h0M220 280h0M310 300h0M370 300h0" stroke-width="14.7"/></g></svg><figcaption><h3>Compare</h3><p>Eight different answers, side by side.</p></figcaption></figure><figure><svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Halftone sphere illustration"><rect width="400" height="300" fill="#fff"/><g class="drift" stroke="#000" stroke-linecap="round" fill="none"><path d="M161 42h0M175 42h0M189 42h0M203 42h0M196 56h0M210 56h0M119 70h0M189 70h0M203 70h0M112 84h0M182 84h0M196 84h0M210 84h0M105 98h0M175 98h0M189 98h0M112 112h0M126 112h0M140 112h0M154 112h0M168 112h0M182 112h0M105 126h0M119 126h0M133 126h0M147 126h0M161 126h0M7 210h0M21 210h0M35 210h0M49 210h0M63 210h0M77 210h0M91 210h0M105 210h0M119 210h0M287 210h0M301 210h0M315 210h0M329 210h0M343 210h0M357 210h0M371 210h0M385 210h0M399 210h0M0 224h0M14 224h0M28 224h0M42 224h0M56 224h0M70 224h0M84 224h0M98 224h0M112 224h0M126 224h0M266 224h0M280 224h0M294 224h0M308 224h0M322 224h0M336 224h0M350 224h0M364 224h0M378 224h0M392 224h0M7 238h0M21 238h0M35 238h0M49 238h0M63 238h0M77 238h0M91 238h0M105 238h0M119 238h0M133 238h0M147 238h0M245 238h0M259 238h0M273 238h0M287 238h0M301 238h0M315 238h0M329 238h0M343 238h0M357 238h0M371 238h0M385 238h0M399 238h0M0 252h0M14 252h0M28 252h0M42 252h0M56 252h0M70 252h0M84 252h0M98 252h0M112 252h0M336 252h0M350 252h0M364 252h0M378 252h0M392 252h0M7 266h0M21 266h0M35 266h0M49 266h0M63 266h0M77 266h0M91 266h0M371 266h0M385 266h0M399 266h0" stroke-width="2.1"/><path d="M217 42h0M224 56h0M217 70h0M231 70h0M224 84h0M203 98h0M217 98h0M98 112h0M196 112h0M210 112h0M175 126h0M189 126h0M203 126h0M98 140h0M112 140h0M126 140h0M140 140h0M154 140h0M168 140h0M182 140h0M119 154h0M133 154h0M147 154h0M161 154h0M0 280h0M14 280h0M28 280h0M42 280h0M56 280h0M70 280h0M84 280h0M98 280h0M364 280h0M378 280h0M392 280h0M7 294h0M21 294h0M35 294h0M49 294h0M63 294h0M77 294h0M91 294h0M105 294h0M119 294h0M133 294h0M147 294h0M161 294h0M301 294h0M315 294h0M329 294h0M343 294h0M357 294h0M371 294h0M385 294h0M399 294h0" stroke-width="4.2"/><path d="M231 42h0M238 56h0M245 70h0M238 84h0M252 84h0M231 98h0M245 98h0M224 112h0M238 112h0M217 126h0M231 126h0M196 140h0M210 140h0M105 154h0M175 154h0M189 154h0M203 154h0M112 168h0M126 168h0M140 168h0M154 168h0M168 168h0M182 168h0M126 252h0M140 252h0M154 252h0M168 252h0M182 252h0M196 252h0M210 252h0M224 252h0M238 252h0M252 252h0M266 252h0M280 252h0M294 252h0M308 252h0M322 252h0M105 266h0M119 266h0M133 266h0M147 266h0M161 266h0M175 266h0M189 266h0M203 266h0M217 266h0M231 266h0M245 266h0M259 266h0M273 266h0M287 266h0M301 266h0M315 266h0M329 266h0M343 266h0M357 266h0M112 280h0M126 280h0M140 280h0M154 280h0M168 280h0M182 280h0M196 280h0M210 280h0M224 280h0M238 280h0M252 280h0M266 280h0M280 280h0M294 280h0M308 280h0M322 280h0M336 280h0M350 280h0M175 294h0M189 294h0M203 294h0M217 294h0M231 294h0M245 294h0M259 294h0M273 294h0M287 294h0" stroke-width="6.3"/><path d="M245 42h0M252 56h0M259 70h0M266 84h0M259 98h0M252 112h0M245 126h0M224 140h0M238 140h0M217 154h0M98 168h0M196 168h0M210 168h0M119 182h0M133 182h0M147 182h0M161 182h0M175 182h0M189 182h0" stroke-width="8.4"/><path d="M266 56h0M273 70h0M273 98h0M266 112h0M259 126h0M252 140h0M231 154h0M245 154h0M224 168h0M105 182h0M203 182h0M217 182h0M112 196h0M126 196h0M140 196h0M154 196h0M168 196h0M182 196h0M196 196h0" stroke-width="10.5"/><path d="M280 84h0M287 98h0M280 112h0M273 126h0M266 140h0M259 154h0M238 168h0M252 168h0M231 182h0M210 196h0M133 210h0M147 210h0M161 210h0M175 210h0M189 210h0" stroke-width="12.6"/><path d="M294 112h0M287 126h0M301 126h0M280 140h0M294 140h0M273 154h0M287 154h0M301 154h0M266 168h0M280 168h0M294 168h0M245 182h0M259 182h0M273 182h0M287 182h0M224 196h0M238 196h0M252 196h0M266 196h0M280 196h0M203 210h0M217 210h0M231 210h0M245 210h0M259 210h0M273 210h0M140 224h0M154 224h0M168 224h0M182 224h0M196 224h0M210 224h0M224 224h0M238 224h0M252 224h0M161 238h0M175 238h0M189 238h0M203 238h0M217 238h0M231 238h0" stroke-width="14.7"/></g></svg><figcaption><h3>Decide</h3><p>One summary. The final call is yours.</p></figcaption></figure></section>
+<div class="stats wrap rv"><div><b data-n="8">0</b><span>AI models answer at once</span></div><div><b data-n="1">0</b><span>question to type</span></div><div><b data-n="1">0</b><span>summary that names the gaps</span></div><div><b data-n="0">0</b><span>tabs to juggle</span></div></div>
 
-    /* ---------- interactive press / hover feel ---------- */
-    .press-btn { transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease; }
-    .press-btn:active { transform: translateY(2px) scale(.98); }
-    .lift-card { transition: transform .2s ease, box-shadow .2s ease; }
-    .lift-card:hover { transform: translateY(-4px); box-shadow: 5px 5px 0 #111827; }
+<section class="blk" id="explore"><div class="wrap">
+<div class="sh rv"><h2>See the split at a glance</h2><p>Pick a question. Each square is one model: black means yes, pink means it depends, white means no.</p></div>
+<div class="ex rv"><div class="ex-l" id="chips"></div>
+<div class="ex-r"><div class="legend"><span><i style="background:#000"></i>Yes</span><span><i style="background:var(--pk)"></i>Depends</span><span><i></i>No</span></div>
+<div class="grid8" id="grid8"></div><div class="meter" id="meter"></div><p id="exSum"></p></div></div></div></section>
 
-    /* ---------- shake for empty-input error ---------- */
-    .shake { animation: shake .4s ease; }
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      20% { transform: translateX(-6px); }
-      40% { transform: translateX(6px); }
-      60% { transform: translateX(-4px); }
-      80% { transform: translateX(4px); }
-    }
+<section class="blk" id="demo"><div class="wrap">
+<div class="sh rv"><h2>Watch one question become eight answers</h2><p>A 12-second loop of a real comparison, from typing to summary. Pause it or click the bar.</p></div>
+<div class="win rv"><div class="win-top"><span>Remagine: live comparison</span><span>Demo</span></div>
+<div class="win-body"><div class="qrow"><div class="q"><span id="dq"></span><span class="caret"></span></div><div id="dbtn" class="go">Ask</div></div>
+<p id="dwait" style="opacity:0">Asking 8 AI models…</p><div class="dgrid" id="dgrid"></div>
+<div id="dsum"><p class="who">Summary</p><p class="t">Most say yes for systems work and split on how bumpy the start is. Begin with one small project, then decide.</p></div></div>
+<div class="ctrl"><button id="playBtn" aria-label="Pause demo"><svg width="16" height="16" viewBox="0 0 24 24" fill="#000"><path id="playIcon" d="M7 5h3v14H7zM14 5h3v14h-3z"/></svg></button>
+<div id="dtrack" role="slider" aria-label="Demo progress" aria-valuemin="0" aria-valuemax="12" aria-valuenow="0"><div id="dbar"></div></div><span id="dtime">0:00</span></div></div></div></section>
 
-    /* ---------- loading dots for "asking all AIs" state ---------- */
-    .dot { animation: dotPulse 1.1s ease-in-out infinite; }
-    .dot:nth-child(2) { animation-delay: .15s; }
-    .dot:nth-child(3) { animation-delay: .3s; }
-    @keyframes dotPulse {
-      0%, 100% { opacity: .25; transform: translateY(0); }
-      50% { opacity: 1; transform: translateY(-3px); }
-    }
+<section class="blk" id="how"><div class="wrap"><div class="sh rv"><h2>How Remagine works</h2></div>
+<div class="steps rv"><div><p class="n">1</p><h3>Ask one question</h3><p>Type it once. It goes to every model in your lineup at the same time.</p><i class="ln"></i></div>
+<div><p class="n">2</p><h3>See where they differ</h3><p>Answers line up side by side, so gaps and disagreements stand out.</p><i class="ln"></i></div>
+<div><p class="n">3</p><h3>Get one summary</h3><p>Every answer is folded into a single take you can act on.</p><i class="ln"></i></div></div></div></section>
 
-    /* ---------- result reveal ---------- */
-    .reveal {
-      opacity: 0;
-      transform: translateY(10px);
-      animation: revealIn .5s ease forwards;
-    }
-    @keyframes revealIn { to { opacity: 1; transform: translateY(0); } }
+<section class="blk" id="product"><div class="wrap">
+<div class="sh rv"><h2>One box in, every model's answer out</h2><p>Choose the models to compare, ask your question, and keep the answers and summary in one thread.</p></div>
+<div id="modelToggles" class="rv"></div><p class="hint">Click a model to include it or leave it out of your next comparison.</p>
+<div class="feats rv"><div><div class="viz b" aria-hidden="true"></div><h3>Side by side</h3><p>Every model answers in its own lane, so differences in length and tone are easy to see.</p></div>
+<div><div class="gauge" aria-hidden="true"><i></i><u></u></div><h3>A clear read on agreement</h3><p>See at a glance whether the models are aligned or pulling apart.</p></div>
+<div><div class="thread" aria-hidden="true"><p>Your question</p><p>Eight answers</p><p>One summary</p></div><h3>One thread, kept</h3><p>Your question, the answers and the summary stay together for later.</p></div>
+<div><div class="sw" aria-hidden="true"><div><b></b>Perplexity</div><div><b></b>Copilot</div><div><b></b>Kimi</div></div><h3>Your lineup</h3><p>Switch models on or off before each comparison.</p></div></div></div></section>
 
-    /* ---------- mobile nav ---------- */
-    #mobileNav { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
-    #mobileNav.open { max-height: 320px; }
+<section class="blk"><div class="wrap"><div class="sh rv"><h2>Ask it about anything with two sides</h2><p>Hover a row. Remagine is most useful when a single answer is not enough.</p></div>
+<div class="uc rv"><a href="#signup"><b>A</b><strong>Which laptop to buy</strong><span>Specs, budget and brand pull in different directions.</span></a>
+<a href="#signup"><b>B</b><strong>Is this code safe to ship</strong><span>Four reviewers catch what one misses.</span></a>
+<a href="#signup"><b>C</b><strong>What does this clause mean</strong><span>Compare readings before you call a lawyer.</span></a>
+<a href="#signup"><b>D</b><strong>Where to travel in March</strong><span>Eight itineraries, one shortlist.</span></a>
+<a href="#signup"><b>E</b><strong>Rewrite my email</strong><span>Pick the tone that fits you.</span></a></div></div></section>
 
-    /* ---------- toast ---------- */
-    #toast {
-      transition: transform .3s ease, opacity .3s ease;
-      transform: translate(-50%, 20px);
-      opacity: 0;
-      pointer-events: none;
-    }
-    #toast.show { transform: translate(-50%, 0); opacity: 1; }
-
-    /* ---------- scroll-reveal for lower sections ---------- */
-    .sr {
-      opacity: 0;
-      transform: translateY(18px);
-      transition: opacity .6s ease, transform .6s ease;
-    }
-    .sr.in { opacity: 1; transform: translateY(0); }
-
-    /* ---------- accordion ---------- */
-    .accordion-body { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
-    .accordion-body.open { max-height: 220px; }
-    .chev { transition: transform .3s ease; }
-    .chev.open { transform: rotate(90deg); }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.001ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.001ms !important;
-        scroll-behavior: auto !important;
-      }
-    }
-
-    /* keep the hero illustration fluid at every width */
-    #hero-illustration-wrap { width: 100%; max-width: 700px; aspect-ratio: 760 / 560; height: auto; }
-
-    /* ===== v2 design layer ===== */
-    body{position:relative;background-color:#FFFFFF;background-image:radial-gradient(rgba(17,24,39,.09) 1.2px,transparent 1.3px);background-size:22px 22px}
-    main,footer{position:relative;z-index:1}
-    #doodles{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-    .dd{position:absolute}
-    .dd>div{width:100%;height:100%;animation:bob var(--d,7s) ease-in-out infinite;animation-delay:var(--l,0s)}
-    @keyframes bob{0%,100%{transform:translateY(0) rotate(var(--r,0deg))}50%{transform:translateY(-14px) rotate(calc(var(--r,0deg) + 8deg))}}
-    @media(max-width:640px){#doodles{opacity:.45}}
-    #prog{position:absolute;left:0;bottom:-1px;height:3px;width:0;background:#FF5C5C}
-    .pulse-dot{width:8px;height:8px;border-radius:9999px;background:#FF5C5C;animation:pulse 1.8s infinite}
-    @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,92,92,.6)}70%,100%{box-shadow:0 0 0 8px rgba(255,92,92,0)}}
-    .mq{display:flex;width:max-content;animation:mq 30s linear infinite}
-    .mq:hover{animation-play-state:paused}
-    @keyframes mq{to{transform:translateX(-50%)}}
-    .caret{display:inline-block;width:2px;height:1em;background:#111827;margin-left:1px;vertical-align:-2px;animation:blink 1s steps(1) infinite}
-    @keyframes blink{50%{opacity:0}}
-    .dcard,#dsum{opacity:0;transform:translateY(14px) scale(.96);transition:opacity .45s ease,transform .45s cubic-bezier(.21,.9,.32,1)}
-    #dbtn.pressed{transform:scale(.94);background:#f89ab0}
-    .steps{position:relative}
-    .steps>.lift-card{position:relative;z-index:1;transform:rotate(var(--r,0deg))}
-    .steps>.lift-card:nth-child(1){--r:-1.4deg}.steps>.lift-card:nth-child(2){--r:1deg}.steps>.lift-card:nth-child(3){--r:-.8deg}
-    .steps>.lift-card:hover{transform:rotate(0) translateY(-6px)}
-    @media(min-width:768px){.steps::before{content:"";position:absolute;left:12%;right:12%;top:46px;border-top:3px dashed rgba(17,24,39,.35)}}
-    .bar{transform-origin:bottom;animation:grow 2.6s ease-in-out infinite alternate}
-    @keyframes grow{from{transform:scaleY(.3)}to{transform:scaleY(1)}}
-    .needle{transform-origin:60px 60px;animation:sway 3.2s ease-in-out infinite alternate}
-    @keyframes sway{from{transform:rotate(-55deg)}to{transform:rotate(50deg)}}
-    .bub{animation:bub 3.6s ease-in-out infinite}
-    @keyframes bub{0%,100%{transform:translateX(0)}50%{transform:translateX(10px)}}
-    .knob{animation:knob 3s ease-in-out infinite}
-    @keyframes knob{0%,35%{transform:translateX(0)}50%,85%{transform:translateX(18px)}100%{transform:translateX(0)}}
-    .bigword{font-size:clamp(3.5rem,17vw,13rem);line-height:.85;font-weight:800;letter-spacing:-.04em;color:transparent;-webkit-text-stroke:2px #FBAEBE;text-align:center;margin-top:2.5rem;transition:color .4s}
-    .bigword:hover{color:#FBAEBE}
-    .say{opacity:0;transform:translateY(10px) scale(.9);transition:opacity .45s ease,transform .5s cubic-bezier(.21,.9,.32,1)}
-    .say.on{opacity:1;transform:none}
-    .flow{animation:flow 1.2s linear infinite}
-    @keyframes flow{to{stroke-dashoffset:-22}}
-    .blink{transform-box:fill-box;transform-origin:center;animation:blink2 4.5s infinite}
-    @keyframes blink2{0%,92%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
-</style>
-</head>
-<body class="min-h-screen text-gray-900 flex flex-col">
-<div id="doodles" aria-hidden="true"></div>
-
-<!-- BEGIN: MainHeader -->
-<header class="w-full border-b border-gray-900 bg-[#FFFFFF]/90 backdrop-blur sticky top-0 z-40" data-purpose="site-header">
-  <div id="prog"></div>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-    <a class="flex items-center gap-1.5 select-none" data-purpose="brand-logo" href="#top">
-      <span class="text-xl sm:text-2xl font-extrabold tracking-tight text-gray-950 font-sans">Remagine</span>
-      <svg class="w-5 h-5 -mt-2 text-gray-900 fill-current spin-slow" viewBox="0 0 24 24">
-        <path d="M12 0L14.2 8.8L23 11L14.2 13.2L12 22L9.8 13.2L1 11L9.8 8.8L12 0Z" fill="none" stroke="#111827" stroke-linejoin="round" stroke-width="2"></path>
-        <path d="M19 16L20 19.5L23.5 20.5L20 21.5L19 25L18 21.5L14.5 20.5L18 19.5L19 16Z" fill="#111827" transform="scale(0.55) translate(14, 4)"></path>
-      </svg>
-    </a>
-
-    <div class="flex items-center gap-3 sm:gap-7" data-purpose="nav-actions">
-      <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-800">
-        <a class="hover:text-black transition-colors" href="#demo">Demo</a>
-        <a class="hover:text-black transition-colors" href="#product">Product</a>
-        <a class="hover:text-black transition-colors" href="/history.html">All chats</a>
-        <a class="hover:text-black transition-colors" href="#careers">Careers</a>
-        <a class="hover:text-black transition-colors" href="#blogs">Blogs</a>
-      </nav>
-
-      <button id="askAiTopBtn" class="press-btn px-4 sm:px-5 py-2 rounded-full border-2 border-gray-950 bg-[#FBAEBE] hover:bg-[#fa9eb1] text-xs md:text-sm font-bold text-gray-950 shadow-sm inline-flex items-center justify-center">
-        Ask AI
-      </button>
-
-      <!-- Mobile menu toggle -->
-      <button id="menuToggle" aria-expanded="false" aria-label="Open menu" class="md:hidden press-btn w-9 h-9 rounded-full border-2 border-gray-950 flex items-center justify-center">
-        <svg id="menuIcon" class="w-4 h-4" fill="none" stroke="#111827" stroke-linecap="round" stroke-width="2" viewBox="0 0 24 24">
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-      </button>
-    </div>
-  </div>
-
-  <!-- Mobile nav panel -->
-  <div id="mobileNav" class="md:hidden border-t border-gray-900 bg-white">
-    <nav class="flex flex-col px-4 py-3 text-sm font-semibold text-gray-800">
-      <a class="py-3 border-b border-gray-100" href="#demo">Demo</a>
-      <a class="py-3 border-b border-gray-100" href="#product">Product</a>
-      <a class="py-3 border-b border-gray-100" href="/history.html">All chats</a>
-      <a class="py-3 border-b border-gray-100" href="#careers">Careers</a>
-      <a class="py-3" href="#blogs">Blogs</a>
-    </nav>
-  </div>
-</header>
-<!-- END: MainHeader -->
-
-<main id="top" class="flex-1 flex flex-col items-center pt-10 sm:pt-12 md:pt-16 pb-12 px-4">
-
-  <!-- Hero -->
-  <section class="max-w-3xl text-center mx-auto" data-purpose="hero-copy">
-    <div class="mb-6 inline-flex items-center gap-2 rounded-full border-2 border-gray-950 bg-white px-3.5 py-1.5 text-xs font-bold shadow-[3px_3px_0_#111827]"><span class="pulse-dot"></span>Eight leading AI models, side by side</div><br/>
-    <div class="inline-block relative">
-      <h1 class="text-3xl sm:text-4xl md:text-[54px] font-extrabold tracking-tight text-gray-950 leading-tight">
-        Stop Trusting One AI. Ask Them All
-      </h1>
-      <div class="absolute -top-3 -right-5 sm:-top-4 sm:-right-7 md:-top-5 md:-right-9">
-        <svg class="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 twinkle" fill="none" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-          <path d="M16 1.5L19.5 12.5L30.5 16L19.5 19.5L16 30.5L12.5 19.5L1.5 16L12.5 12.5L16 1.5Z" fill="#F8FAFC" stroke="#111827" stroke-linejoin="round" stroke-width="2.2"></path>
-          <circle cx="26" cy="6" fill="#3B82F6" r="2.5" stroke="#111827" stroke-width="1.2"></circle>
-        </svg>
-      </div>
-    </div>
-
-    <p class="mt-4 text-base md:text-[17px] text-gray-700 max-w-lg mx-auto font-medium leading-relaxed px-2">
-      Compare answers from leading AI models, uncover different perspectives, and get a clear, purpose-driven summary — all in one place.
-    </p>
-
-    <form id="askForm" class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto" data-purpose="ask-form" novalidate>
-      <div class="w-full sm:w-64">
-        <label class="sr-only" for="askInput">Ask all AI at once</label>
-        <input id="askInput" class="w-full px-5 py-2.5 rounded-full border-2 border-gray-950 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all" placeholder="Ask all AI at once" type="text"/>
-      </div>
-      <button id="askBtn" type="submit" class="press-btn w-full sm:w-auto px-6 py-2.5 rounded-full border-2 border-gray-950 bg-[#FBAEBE] hover:bg-[#f99cb0] text-sm font-bold text-gray-950 whitespace-nowrap shadow-none hover:shadow-sm">
-        <span id="askBtnLabel">Ask</span>
-      </button>
-    </form>
-    <p id="askError" class="mt-2 text-xs font-semibold text-brandCoral hidden">Type a question first — that's what the AIs are waiting to answer.</p>
-
-    <!-- Results panel: hidden until a question is submitted -->
-    <div id="resultsPanel" class="mt-8 max-w-2xl mx-auto text-left hidden"></div>
-  </section>
-
-  
-  <!-- Hero scene -->
-  <section class="mt-12 md:mt-16 w-full max-w-3xl px-1" data-purpose="hero-illustration" aria-hidden="true">
-    <div class="mx-auto w-full rounded-2xl border-[2.5px] border-gray-950 bg-white px-4 py-3 text-center text-sm font-bold shadow-[5px_5px_0_#111827] sm:max-w-sm">Which laptop should I buy for video editing?</div>
-    <svg class=" h-9 w-full" viewBox="0 0 300 40" preserveAspectRatio="none" fill="none"><g stroke="#111827" stroke-width="2.5" stroke-dasharray="5 6" class="flow" vector-effect="non-scaling-stroke"><path d="M150 0C150 22 50 16 50 40" vector-effect="non-scaling-stroke"/><path d="M150 0V40" vector-effect="non-scaling-stroke"/><path d="M150 0C150 22 250 16 250 40" vector-effect="non-scaling-stroke"/></g></svg>
-    <div class="grid grid-cols-3 gap-2 sm:gap-8"><div class="flex flex-col items-center"><div class="say relative w-full rounded-xl border-2 border-gray-950 px-2 py-2 text-center text-[11px] font-bold leading-snug sm:px-3 sm:text-sm" style="background:#FFE1E1">RAM and screen first<span class="absolute -bottom-[7px] left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border-b-2 border-r-2 border-gray-950" style="background:#FFE1E1"></span></div><svg viewBox="0 0 100 100" class="float-slow mt-3 w-20 sm:w-28" style="animation-delay:0s"><path d="M24 40L20 14L42 28M76 40L80 14L58 28" fill="#FF5C5C" stroke="#111827" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><circle cx="50" cy="58" r="34" fill="#FF5C5C" stroke="#111827" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><g class="blink"><circle cx="38" cy="56" r="7" fill="#fff" stroke="#111827" stroke-width="2.5"/><circle cx="38" cy="57" r="3" fill="#111827"/></g><g class="blink"><circle cx="62" cy="56" r="7" fill="#fff" stroke="#111827" stroke-width="2.5"/><circle cx="62" cy="57" r="3" fill="#111827"/></g><path d="M42 70c5 6 11 6 16 0" fill="none" stroke="#111827" stroke-width="3" stroke-linecap="round"/></svg><p class="text-xs font-extrabold text-gray-700">Claude</p></div><div class="flex flex-col items-center"><div class="say relative w-full rounded-xl border-2 border-gray-950 px-2 py-2 text-center text-[11px] font-bold leading-snug sm:px-3 sm:text-sm" style="background:#DCE8FE">Chip speed first<span class="absolute -bottom-[7px] left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border-b-2 border-r-2 border-gray-950" style="background:#DCE8FE"></span></div><svg viewBox="0 0 100 100" class="float-slow mt-3 w-20 sm:w-28" style="animation-delay:0.7s"><path d="M50 28V12" stroke="#111827" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><circle cx="50" cy="10" r="5" fill="#FCD34D" stroke="#111827" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><rect x="16" y="28" width="68" height="62" rx="22" fill="#3B82F6" stroke="#111827" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><g class="blink"><circle cx="38" cy="54" r="7" fill="#fff" stroke="#111827" stroke-width="2.5"/><circle cx="38" cy="55" r="3" fill="#111827"/></g><g class="blink"><circle cx="62" cy="54" r="7" fill="#fff" stroke="#111827" stroke-width="2.5"/><circle cx="62" cy="55" r="3" fill="#111827"/></g><path d="M42 70c5 6 11 6 16 0" fill="none" stroke="#111827" stroke-width="3" stroke-linecap="round"/></svg><p class="text-xs font-extrabold text-gray-700">GPT</p></div><div class="flex flex-col items-center"><div class="say relative w-full rounded-xl border-2 border-gray-950 px-2 py-2 text-center text-[11px] font-bold leading-snug sm:px-3 sm:text-sm" style="background:#FEF3C7">Budget decides<span class="absolute -bottom-[7px] left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border-b-2 border-r-2 border-gray-950" style="background:#FEF3C7"></span></div><svg viewBox="0 0 100 100" class="float-slow mt-3 w-20 sm:w-28" style="animation-delay:1.4s"><path d="M20 62C14 36 36 24 52 26S88 38 82 64C78 84 56 90 42 88S24 82 20 62Z" fill="#FCD34D" stroke="#111827" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><path d="M50 26C50 14 58 10 64 12C62 20 56 26 50 26Z" fill="#A7F3D0" stroke="#111827" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><g class="blink"><circle cx="38" cy="58" r="7" fill="#fff" stroke="#111827" stroke-width="2.5"/><circle cx="38" cy="59" r="3" fill="#111827"/></g><g class="blink"><circle cx="62" cy="58" r="7" fill="#fff" stroke="#111827" stroke-width="2.5"/><circle cx="62" cy="59" r="3" fill="#111827"/></g><path d="M42 70c5 6 11 6 16 0" fill="none" stroke="#111827" stroke-width="3" stroke-linecap="round"/></svg><p class="text-xs font-extrabold text-gray-700">Gemini</p></div></div>
-    <svg class="-scale-y-100 h-9 w-full" viewBox="0 0 300 40" preserveAspectRatio="none" fill="none"><g stroke="#111827" stroke-width="2.5" stroke-dasharray="5 6" class="flow" vector-effect="non-scaling-stroke"><path d="M150 0C150 22 50 16 50 40" vector-effect="non-scaling-stroke"/><path d="M150 0V40" vector-effect="non-scaling-stroke"/><path d="M150 0C150 22 250 16 250 40" vector-effect="non-scaling-stroke"/></g></svg>
-    <div class="say mx-auto w-full rounded-2xl border-[2.5px] border-gray-950 bg-[#FFF5F3] px-4 py-3 text-center shadow-[5px_5px_0_#111827] sm:max-w-md"><p class="text-xs font-extrabold text-gray-800">Summary</p><p class="mt-1 text-sm font-semibold text-gray-950">Everyone weighs the specs. They differ on which one leads.</p></div>
-  </section>
-
-  <!-- Marquee -->
-  <section class="mt-16 md:mt-24 w-screen overflow-hidden" aria-hidden="true">
-    <div class="-rotate-1 border-y-[2.5px] border-gray-950 bg-gray-950 text-white py-3.5"><div class="mq items-center"><span class="text-lg font-extrabold">Ask once</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Compare side by side</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Spot the disagreements</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Read one clear summary</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Ask once</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Compare side by side</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Spot the disagreements</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Read one clear summary</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Ask once</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Compare side by side</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Spot the disagreements</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Read one clear summary</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Ask once</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Compare side by side</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Spot the disagreements</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg><span class="text-lg font-extrabold">Read one clear summary</span><svg class="w-5 h-5 mx-6 shrink-0" viewBox="0 0 32 32"><path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z" fill="#FBAEBE" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg></div></div>
-  </section>
-
-  <!-- Stats -->
-  <section class="sr mt-14 w-full max-w-5xl px-2 grid grid-cols-2 md:grid-cols-4 gap-4">
-    <div class="rounded-2xl border-[2.5px] border-gray-950 bg-brandMint p-5 shadow-[5px_5px_0_#111827]"><p class="text-4xl font-extrabold"><span data-count="8">0</span></p><p class="mt-1 text-sm font-semibold">AI models answer at once</p></div>
-    <div class="rounded-2xl border-[2.5px] border-gray-950 bg-brandYellow p-5 shadow-[5px_5px_0_#111827]"><p class="text-4xl font-extrabold"><span data-count="1">0</span></p><p class="mt-1 text-sm font-semibold">question to type</p></div>
-    <div class="rounded-2xl border-[2.5px] border-gray-950 bg-[#FFF5F3] p-5 shadow-[5px_5px_0_#111827]"><p class="text-4xl font-extrabold"><span data-count="1">0</span></p><p class="mt-1 text-sm font-semibold">summary that names the gaps</p></div>
-    <div class="rounded-2xl border-[2.5px] border-gray-950 bg-white p-5 shadow-[5px_5px_0_#111827]"><p class="text-4xl font-extrabold"><span data-count="0">0</span></p><p class="mt-1 text-sm font-semibold">tabs to juggle</p></div>
-  </section>
-
-  <!-- Demo player -->
-  <section class="sr mt-24 md:mt-32 w-full max-w-5xl px-2" id="demo">
-    <div class="text-center max-w-xl mx-auto">
-      <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-950">Watch one question become eight answers</h2>
-      <p class="mt-3 text-gray-600">A 12-second loop of a real comparison, from typing to summary. Pause it or drag the bar.</p>
-    </div>
-    <div class="relative mt-10">
-      <div class="absolute inset-0 translate-x-3 translate-y-3 rounded-3xl border-[2.5px] border-gray-950 bg-brandBlue"></div>
-      <div class="relative overflow-hidden rounded-3xl border-[2.5px] border-gray-950 bg-white">
-        <div class="flex items-center gap-2 border-b-2 border-gray-950 bg-brandYellow px-4 py-3">
-          <span class="h-3 w-3 rounded-full border-2 border-gray-950 bg-brandCoral"></span><span class="h-3 w-3 rounded-full border-2 border-gray-950 bg-white"></span><span class="h-3 w-3 rounded-full border-2 border-gray-950 bg-brandMint"></span>
-          <span class="ml-3 text-xs font-bold">Remagine: live comparison</span>
-        </div>
-        <div class="min-h-[380px] bg-[#F8FAFC] p-5 sm:p-8">
-          <div class="flex gap-2">
-            <div class="flex-1 rounded-full border-2 border-gray-950 bg-white px-4 py-2.5 text-sm font-medium"><span id="dq"></span><span class="caret"></span></div>
-            <div id="dbtn" class="rounded-full border-2 border-gray-950 bg-brandPink px-5 py-2.5 text-sm font-bold transition-transform">Ask</div>
-          </div>
-          <p id="dwait" class="mt-5 text-sm font-semibold text-gray-600 transition-opacity">Asking 8 AI models…</p>
-          <div class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4"><div class="dcard rounded-xl border-2 border-brandMint bg-white p-3"><p class="text-xs font-extrabold text-gray-500">Perplexity</p><p class="mt-1 text-xs leading-relaxed sm:text-sm">Yes for systems work, with demand rising.</p></div><div class="dcard rounded-xl border-2 border-[#86EFAC] bg-white p-3"><p class="text-xs font-extrabold text-gray-500">ChatGPT</p><p class="mt-1 text-xs leading-relaxed sm:text-sm">Yes. Start with a small command-line project.</p></div><div class="dcard rounded-xl border-2 border-brandYellow bg-white p-3"><p class="text-xs font-extrabold text-gray-500">Gemini</p><p class="mt-1 text-xs leading-relaxed sm:text-sm">Depends on your goal; weigh web against systems.</p></div><div class="dcard rounded-xl border-2 border-brandCoral bg-white p-3"><p class="text-xs font-extrabold text-gray-500">Claude</p><p class="mt-1 text-xs leading-relaxed sm:text-sm">Yes, if memory safety matters to you.</p></div><div class="dcard rounded-xl border-2 border-[#A78BFA] bg-white p-3"><p class="text-xs font-extrabold text-gray-500">Grok</p><p class="mt-1 text-xs leading-relaxed sm:text-sm">Yes, but expect a bumpy first month.</p></div><div class="dcard rounded-xl border-2 border-brandBlue bg-white p-3"><p class="text-xs font-extrabold text-gray-500">Copilot</p><p class="mt-1 text-xs leading-relaxed sm:text-sm">Yes. Try it on a small script you already have.</p></div><div class="dcard rounded-xl border-2 border-[#FDBA74] bg-white p-3"><p class="text-xs font-extrabold text-gray-500">Kimi</p><p class="mt-1 text-xs leading-relaxed sm:text-sm">Yes, if you enjoy a strict compiler.</p></div><div class="dcard rounded-xl border-2 border-brandPink bg-white p-3"><p class="text-xs font-extrabold text-gray-500">Meta AI</p><p class="mt-1 text-xs leading-relaxed sm:text-sm">Maybe. Check whether your team uses it.</p></div></div>
-          <div id="dsum" class="mt-4 rounded-xl border-2 border-gray-950 bg-[#FFF5F3] p-4"><p class="text-xs font-extrabold text-gray-700">Summary</p><p class="mt-1.5 text-sm leading-relaxed">Most say yes for systems work and split on how bumpy the start is. Begin with one small project, then decide.</p></div>
-        </div>
-        <div class="flex items-center gap-4 border-t-2 border-gray-950 bg-white px-4 py-3">
-          <button id="playBtn" aria-label="Pause demo" class="press-btn flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-gray-950 bg-brandPink"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="#111827" stroke="#111827" stroke-width="2" stroke-linejoin="round"><path id="playIcon" d="M7 5h3v14H7zM14 5h3v14h-3z"/></svg></button>
-          <div id="dtrack" class="h-3 flex-1 cursor-pointer overflow-hidden rounded-full border-2 border-gray-950 bg-white" role="slider" aria-label="Demo progress" aria-valuemin="0" aria-valuemax="12"><div id="dbar" class="h-full bg-brandCoral" style="width:0"></div></div>
-          <span id="dtime" class="w-10 text-right text-xs font-bold tabular-nums">0:00</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- How it works -->
-  <section class="sr mt-20 md:mt-28 w-full max-w-5xl px-2" id="how">
-    <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-950 text-center">How Remagine works</h2>
-    <div class="steps mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="lift-card crisp-border-thick rounded-2xl bg-white p-6">
-        <div class="w-11 h-11 rounded-full crisp-border bg-brandBlue flex items-center justify-center font-bold text-white">1</div>
-        <h3 class="mt-4 font-bold text-lg text-gray-950">Ask one question</h3>
-        <p class="mt-2 text-sm text-gray-600 leading-relaxed">Type it once. We send it to every model in your lineup at the same time.</p>
-      </div>
-      <div class="lift-card crisp-border-thick rounded-2xl bg-white p-6">
-        <div class="w-11 h-11 rounded-full crisp-border bg-brandCoral flex items-center justify-center font-bold text-white">2</div>
-        <h3 class="mt-4 font-bold text-lg text-gray-950">See where they differ</h3>
-        <p class="mt-2 text-sm text-gray-600 leading-relaxed">Answers line up side by side, so the gaps and disagreements stand out.</p>
-      </div>
-      <div class="lift-card crisp-border-thick rounded-2xl bg-white p-6">
-        <div class="w-11 h-11 rounded-full crisp-border bg-brandYellow flex items-center justify-center font-bold text-gray-950">3</div>
-        <h3 class="mt-4 font-bold text-lg text-gray-950">Get one summary</h3>
-        <p class="mt-2 text-sm text-gray-600 leading-relaxed">We fold every answer into a single, purpose-driven take you can act on.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Product -->
-  <section class="sr mt-20 md:mt-28 w-full max-w-4xl px-2" id="product">
-    <div class="crisp-border-thick rounded-2xl bg-[#F8FAFC] p-6 sm:p-10">
-      <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-950">One box in, every model's answer out</h2>
-      <p class="mt-3 text-gray-700 max-w-xl leading-relaxed">Toggle the models you want to compare, ask your question, and Remagine keeps their answers — and a plain-language summary — in one thread.</p>
-      <div class="mt-6 flex flex-wrap gap-3" id="modelToggles">
-        <button data-model="on" class="model-toggle press-btn px-4 py-2 rounded-full border-2 border-gray-950 bg-brandMint text-sm font-bold">Perplexity ✓</button>
-        <button data-model="on" class="model-toggle press-btn px-4 py-2 rounded-full border-2 border-gray-950 bg-brandMint text-sm font-bold">ChatGPT ✓</button>
-        <button data-model="on" class="model-toggle press-btn px-4 py-2 rounded-full border-2 border-gray-950 bg-brandMint text-sm font-bold">Gemini ✓</button>
-        <button data-model="on" class="model-toggle press-btn px-4 py-2 rounded-full border-2 border-gray-950 bg-brandMint text-sm font-bold">Claude ✓</button>
-        <button data-model="on" class="model-toggle press-btn px-4 py-2 rounded-full border-2 border-gray-950 bg-brandMint text-sm font-bold">Grok ✓</button>
-        <button data-model="on" class="model-toggle press-btn px-4 py-2 rounded-full border-2 border-gray-950 bg-brandMint text-sm font-bold">Copilot ✓</button>
-        <button data-model="on" class="model-toggle press-btn px-4 py-2 rounded-full border-2 border-gray-950 bg-brandMint text-sm font-bold">Kimi ✓</button>
-        <button data-model="on" class="model-toggle press-btn px-4 py-2 rounded-full border-2 border-gray-950 bg-brandMint text-sm font-bold">Meta AI ✓</button>
-      </div>
-      <p class="mt-3 text-xs text-gray-500">Tap a model to include or leave it out of your next comparison.</p>
-
-      <div class="mt-14">
-        <h3 class="text-xl sm:text-2xl font-extrabold text-gray-950">Made for reading answers, not hunting for them</h3>
-        <div class="mt-6 grid gap-5 sm:grid-cols-2"><div class="lift-card rounded-2xl border-[2.5px] border-gray-950 p-6 bg-brandMint"><div class="h-28 flex items-end"><div class="flex h-24 items-end gap-1.5 w-full"><div class="bar w-full rounded-t-md border-2 border-gray-950" style="height:90%;background:#5EEAD4;animation-delay:0.0s"></div><div class="bar w-full rounded-t-md border-2 border-gray-950" style="height:60%;background:#86EFAC;animation-delay:0.3s"></div><div class="bar w-full rounded-t-md border-2 border-gray-950" style="height:80%;background:#FCD34D;animation-delay:0.6s"></div><div class="bar w-full rounded-t-md border-2 border-gray-950" style="height:70%;background:#FF5C5C;animation-delay:0.9s"></div><div class="bar w-full rounded-t-md border-2 border-gray-950" style="height:95%;background:#A78BFA;animation-delay:1.2s"></div><div class="bar w-full rounded-t-md border-2 border-gray-950" style="height:55%;background:#3B82F6;animation-delay:1.5s"></div><div class="bar w-full rounded-t-md border-2 border-gray-950" style="height:75%;background:#FDBA74;animation-delay:1.8s"></div><div class="bar w-full rounded-t-md border-2 border-gray-950" style="height:85%;background:#FBAEBE;animation-delay:2.1s"></div></div></div><h3 class="mt-5 font-bold text-lg text-gray-950">Side by side</h3><p class="mt-1.5 text-sm text-gray-800 leading-relaxed">Every model answers in its own lane, so length and tone differences are easy to see.</p></div><div class="lift-card rounded-2xl border-[2.5px] border-gray-950 p-6 bg-[#FFF5F3]"><div class="h-28 flex items-end"><svg viewBox="0 0 120 70" class="h-24 w-40"><path d="M10 60A50 50 0 0 1 110 60" fill="none" stroke="#111827" stroke-width="16" stroke-linecap="round"/><path d="M10 60A50 50 0 0 1 110 60" fill="none" stroke="#A7F3D0" stroke-width="10" stroke-linecap="round"/><g class="needle"><line x1="60" y1="60" x2="60" y2="20" stroke="#111827" stroke-width="4" stroke-linecap="round"/></g><circle cx="60" cy="60" r="7" fill="#FF5C5C" stroke="#111827" stroke-width="2.5"/></svg></div><h3 class="mt-5 font-bold text-lg text-gray-950">A clear read on agreement</h3><p class="mt-1.5 text-sm text-gray-800 leading-relaxed">See at a glance whether the models are aligned or pulling apart.</p></div><div class="lift-card rounded-2xl border-[2.5px] border-gray-950 p-6 bg-brandYellow"><div class="h-28 flex items-end"><div class="w-full space-y-2"><div class="bub w-3/4 rounded-2xl rounded-bl-sm border-2 border-gray-950 bg-white px-3 py-2 text-xs font-bold">Your question</div><div class="bub ml-auto w-2/3 rounded-2xl rounded-br-sm border-2 border-gray-950 bg-brandMint px-3 py-2 text-xs font-bold" style="animation-delay:.4s">Eight answers</div><div class="bub w-4/5 rounded-2xl rounded-bl-sm border-2 border-gray-950 bg-brandPink px-3 py-2 text-xs font-bold" style="animation-delay:.8s">One summary</div></div></div><h3 class="mt-5 font-bold text-lg text-gray-950">One thread, kept</h3><p class="mt-1.5 text-sm text-gray-800 leading-relaxed">Your question, the answers and the summary stay together for later.</p></div><div class="lift-card rounded-2xl border-[2.5px] border-gray-950 p-6 bg-white"><div class="h-28 flex items-end"><div class="w-full space-y-3"><div class="flex items-center gap-3"><div class="h-6 w-11 rounded-full border-2 border-gray-950 bg-white p-0.5"><div class="knob h-4 w-4 rounded-full border-2 border-gray-950 bg-brandCoral" style="animation-delay:0s"></div></div><span class="text-xs font-bold">Perplexity</span></div><div class="flex items-center gap-3"><div class="h-6 w-11 rounded-full border-2 border-gray-950 bg-white p-0.5"><div class="knob h-4 w-4 rounded-full border-2 border-gray-950 bg-brandCoral" style="animation-delay:0.5s"></div></div><span class="text-xs font-bold">Copilot</span></div><div class="flex items-center gap-3"><div class="h-6 w-11 rounded-full border-2 border-gray-950 bg-white p-0.5"><div class="knob h-4 w-4 rounded-full border-2 border-gray-950 bg-brandCoral" style="animation-delay:1s"></div></div><span class="text-xs font-bold">Kimi</span></div></div></div><h3 class="mt-5 font-bold text-lg text-gray-950">Your lineup</h3><p class="mt-1.5 text-sm text-gray-800 leading-relaxed">Switch models on or off before each comparison.</p></div></div>
-      </div>
-    </div>
-  </section>
-
-  
-  <!-- Blogs -->
-  <section class="sr mt-20 md:mt-28 w-full max-w-4xl px-2 pb-4" id="blogs">
-    <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-950">From the blog</h2>
-    <div class="mt-8 space-y-4" id="blogList">
-      <div class="blog-item lift-card bg-white crisp-border-thick rounded-2xl p-5">
-        <button class="blog-toggle w-full flex items-center justify-between text-left">
-          <h3 class="font-bold text-gray-950">Why one model is never the full picture</h3>
-          <svg class="chev w-4 h-4 shrink-0" fill="none" stroke="#111827" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"></path></svg>
-        </button>
-        <div class="accordion-body mt-0">
-          <p class="pt-3 text-sm text-gray-600 leading-relaxed">Every model has blind spots shaped by its training data and design choices. Asking several at once turns a single guess into a genuine comparison.</p>
-        </div>
-      </div>
-      <div class="blog-item lift-card bg-white crisp-border-thick rounded-2xl p-5">
-        <button class="blog-toggle w-full flex items-center justify-between text-left">
-          <h3 class="font-bold text-gray-950">Reading disagreement as a signal</h3>
-          <svg class="chev w-4 h-4 shrink-0" fill="none" stroke="#111827" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"></path></svg>
-        </button>
-        <div class="accordion-body mt-0">
-          <p class="pt-3 text-sm text-gray-600 leading-relaxed">When models disagree, that's rarely noise — it usually points at a genuinely ambiguous or under-specified question worth digging into further.</p>
-        </div>
-      </div>
-      <div class="blog-item lift-card bg-white crisp-border-thick rounded-2xl p-5">
-        <button class="blog-toggle w-full flex items-center justify-between text-left">
-          <h3 class="font-bold text-gray-950">Building a summary you can trust</h3>
-          <svg class="chev w-4 h-4 shrink-0" fill="none" stroke="#111827" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"></path></svg>
-        </button>
-        <div class="accordion-body mt-0">
-          <p class="pt-3 text-sm text-gray-600 leading-relaxed">A good summary names where models agree, flags where they split, and leaves the final call to you instead of quietly picking a winner.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="sr mt-24 md:mt-32 w-full max-w-5xl px-2" id="cta">
-    <div class="relative grid items-center gap-6 overflow-hidden rounded-[2rem] border-[2.5px] border-gray-950 bg-[#FFF5F3] px-6 py-12 shadow-[8px_8px_0_#111827] sm:px-12 md:grid-cols-[1fr_auto]">
-      <span class="absolute -left-10 -top-10 h-32 w-32 rounded-full border-[2.5px] border-gray-950 bg-brandYellow"></span>
-      <span class="absolute -bottom-12 right-40 hidden h-28 w-28 rounded-full border-[2.5px] border-gray-950 bg-brandMint md:block"></span>
-      <div class="relative">
-        <h2 class="text-3xl sm:text-4xl font-extrabold leading-tight text-gray-950">Your next question deserves a second opinion. And a third.</h2>
-        <p class="mt-3 max-w-md font-medium text-gray-900/80">Ask once and read every answer side by side.</p>
-        <button id="ctaBtn" class="press-btn mt-6 rounded-full border-2 border-gray-950 bg-white px-7 py-3 font-bold shadow-[3px_3px_0_#111827]">Ask your first question</button>
-      </div>
-      <svg id="mascot" viewBox="0 0 200 200" class="relative float-slow mx-auto h-40 w-40 cursor-pointer sm:h-52 sm:w-52" role="img" aria-label="Remagine mascot">
-        <path d="M100 30V12" stroke="#111827" stroke-width="4" stroke-linecap="round"/><path d="M100 0l4 8 8 4-8 4-4 8-4-8-8-4 8-4z" fill="#FCD34D" stroke="#111827" stroke-width="2.5" stroke-linejoin="round" class="twinkle"/>
-        <path d="M40 120C32 70 62 30 100 30s70 40 60 90c-6 34-36 56-60 56s-54-22-60-56z" fill="#FFFDF8" stroke="#111827" stroke-width="4" stroke-linejoin="round"/>
-        <g class="eye"><circle cx="72" cy="95" r="17" fill="#fff" stroke="#111827" stroke-width="3.5"/><circle cx="72" cy="95" r="8" fill="#111827"/></g>
-        <g class="eye"><circle cx="128" cy="95" r="17" fill="#fff" stroke="#111827" stroke-width="3.5"/><circle cx="128" cy="95" r="8" fill="#111827"/></g>
-        <ellipse cx="52" cy="128" rx="9" ry="6" fill="#FF5C5C" opacity=".45"/><ellipse cx="148" cy="128" rx="9" ry="6" fill="#FF5C5C" opacity=".45"/>
-        <path d="M84 132c8 10 24 10 32 0" fill="none" stroke="#111827" stroke-width="4" stroke-linecap="round"/>
-      </svg>
-    </div>
-  </section>
-
+<section class="blk" id="blogs"><div class="wrap"><div class="sh rv"><h2>From the blog</h2></div><div class="bl rv">
+<div class="bi"><button class="bt"><h3>Why one model is never the full picture</h3><svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><path d="M9 5l7 7-7 7"/></svg></button><div class="ab"><p>Every model has blind spots shaped by its training data and design choices. Asking several at once turns a single guess into a genuine comparison.</p></div></div>
+<div class="bi"><button class="bt"><h3>Reading disagreement as a signal</h3><svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><path d="M9 5l7 7-7 7"/></svg></button><div class="ab"><p>When models disagree, that's rarely noise. It usually points at an ambiguous or under-specified question worth digging into further.</p></div></div>
+<div class="bi"><button class="bt"><h3>Building a summary you can trust</h3><svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><path d="M9 5l7 7-7 7"/></svg></button><div class="ab"><p>A good summary names where models agree, flags where they split, and leaves the final call to you instead of quietly picking a winner.</p></div></div></div></div></section>
 </main>
 
-<!-- Footer -->
-<footer class="relative z-[1] mt-24 w-full overflow-hidden border-t-[2.5px] border-gray-950 bg-gray-950 text-white">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-12 pb-8">
-    <div class="flex flex-col justify-between gap-8 md:flex-row">
-      <div><p class="text-2xl font-extrabold">Remagine</p><p class="mt-2 max-w-xs text-sm text-gray-400">One question, every model's answer, one clear summary.</p></div>
-      <nav class="flex gap-8 text-sm font-semibold text-gray-300"><a class="hover:text-white" href="#demo">Demo</a><a class="hover:text-white" href="#product">Product</a><a class="hover:text-white" href="#careers">Careers</a><a class="hover:text-white" href="#blogs">Blogs</a></nav>
-      <div class="flex items-center gap-3">
-        <button id="shareBtn" class="press-btn rounded-full border-2 border-white px-4 py-2 text-xs font-bold hover:bg-white/10">Copy link</button>
-        <button id="topBtn" class="press-btn flex h-9 w-9 items-center justify-center rounded-full border-2 border-white hover:bg-white/10" aria-label="Back to top"><svg class="h-4 w-4" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
-      </div>
-    </div>
-    <p class="bigword select-none" aria-hidden="true">Remagine</p>
-    <p class="mt-6 text-center text-xs text-gray-400">© 2026 Remagine. Ask them all.</p>
-  </div>
-</footer>
-
-<!-- Toast -->
-<div id="toast" class="fixed left-1/2 bottom-6 z-50 px-5 py-2.5 rounded-full crisp-border-thick bg-gray-950 text-white text-sm font-semibold"></div>
+<section class="cta"><div class="wrap"><h2>Your next question deserves a second opinion.</h2><p>And a third. Ask once and read every answer side by side.</p><button id="ctaBtn" class="btn">Ask your first question</button></div>
+<div class="word" aria-hidden="true">Remagine</div></section>
+<footer><div class="wrap"><div class="row"><a class="logo" href="#top">Remagine</a><nav><a href="#demo">Demo</a><a href="#product">Product</a><a href="#blogs">Blogs</a></nav>
+<div class="acts"><button id="shareBtn" class="btn ghost">Copy link</button><button id="topBtn" aria-label="Back to top"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><path d="M12 20V5M5 12l7-7 7 7"/></svg></button></div></div>
+<p class="legal">© 2026 Remagine. One question, every model's answer, one clear summary.</p></div></footer>
+<div id="toast" role="status"></div>
 
 <script>
-  // ---------- mobile nav ----------
-  const menuToggle = document.getElementById('menuToggle');
-  const mobileNav = document.getElementById('mobileNav');
-  menuToggle.addEventListener('click', () => {
-    const open = mobileNav.classList.toggle('open');
-    menuToggle.setAttribute('aria-expanded', open);
-  });
-  mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
-    mobileNav.classList.remove('open');
-    menuToggle.setAttribute('aria-expanded', 'false');
-  }));
-
-  // ---------- Ask AI (top header button) ----------
-  document.getElementById('askAiTopBtn').addEventListener('click', () => {
-    document.getElementById('signup')?.scrollIntoView({ behavior: 'smooth' });
-    document.getElementById('askInput').focus();
-  });
-  // give the signup form a stable anchor id (it wraps the input/button)
-  document.getElementById('askForm').id = 'askForm';
-  document.getElementById('askForm').closest('section').id = 'signup';
-
-  // ---------- toast helper ----------
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    clearTimeout(showToast._t);
-    showToast._t = setTimeout(() => t.classList.remove('show'), 2200);
-  }
-
-  // ---------- Ask form: real multi-AI comparison via backend ----------
-  const askForm = document.getElementById('askForm');
-  const askInput = document.getElementById('askInput');
-  const askError = document.getElementById('askError');
-  const resultsPanel = document.getElementById('resultsPanel');
-  const askBtnLabel = document.getElementById('askBtnLabel');
-
-  const NAME_TO_ID = {
-    'Perplexity': 'perplexity', 'ChatGPT': 'chatgpt', 'Gemini': 'gemini', 'Claude': 'claude',
-    'Grok': 'grok', 'Copilot': 'copilot', 'Kimi': 'kimi', 'Meta AI': 'metaai'
-  };
-
-  function activeModelIds() {
-    const names = Array.from(document.querySelectorAll('.model-toggle'))
-      .filter(b => b.dataset.model === 'on')
-      .map(b => b.textContent.replace(' ✓', '').trim());
-    return names.map(n => NAME_TO_ID[n]).filter(Boolean);
-  }
-
-  askForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const q = askInput.value.trim();
-    if (!q) {
-      askError.classList.remove('hidden');
-      askInput.classList.add('shake');
-      setTimeout(() => askInput.classList.remove('shake'), 400);
-      askInput.focus();
-      return;
-    }
-    askError.classList.add('hidden');
-
-    const modelIds = activeModelIds();
-    askBtnLabel.textContent = 'Asking…';
-    document.getElementById('askBtn').disabled = true;
-
-    resultsPanel.classList.remove('hidden');
-    resultsPanel.innerHTML = `
-      <div class="crisp-border-thick rounded-2xl p-5 bg-white">
-        <p class="text-sm font-semibold text-gray-700">Asking every model
-          <span class="inline-flex gap-1 align-middle ml-1">
-            <span class="dot inline-block w-1.5 h-1.5 rounded-full bg-gray-700"></span>
-            <span class="dot inline-block w-1.5 h-1.5 rounded-full bg-gray-700"></span>
-            <span class="dot inline-block w-1.5 h-1.5 rounded-full bg-gray-700"></span>
-          </span>
-        </p>
-      </div>`;
-
-    try {
-      const res = await fetch('/api/ask', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: q, models: modelIds.length ? modelIds : null })
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || 'Request failed');
-      }
-      const session = await res.json();
-      // Hand off to the dedicated chat/results page.
-      window.location.href = `/chat.html?id=${encodeURIComponent(session.id)}`;
-    } catch (err) {
-      resultsPanel.innerHTML = `
-        <div class="crisp-border-thick rounded-2xl p-5 bg-white">
-          <p class="text-sm font-semibold text-brandCoral">Something went wrong: ${(err.message || 'please try again').replace(/</g,'&lt;')}</p>
-        </div>`;
-      askBtnLabel.textContent = 'Ask';
-      document.getElementById('askBtn').disabled = false;
-    }
-  });
-
-  // ---------- model toggles ----------
-  document.querySelectorAll('.model-toggle').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const on = btn.dataset.model === 'on';
-      btn.dataset.model = on ? 'off' : 'on';
-      btn.classList.toggle('bg-brandMint', !on);
-      btn.classList.toggle('bg-gray-100', on);
-      btn.classList.toggle('text-gray-400', on);
-      btn.textContent = btn.textContent.replace(' ✓', '') + (on ? '' : ' ✓');
-    });
-  });
-
-  // ---------- careers apply confirmation ----------
-  document.querySelectorAll('.apply-btn').forEach(btn => {
-    btn.addEventListener('click', () => showToast(`Opening your email client for ${btn.dataset.role}…`));
-  });
-
-  // ---------- blog accordions ----------
-  document.querySelectorAll('.blog-toggle').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const body = btn.nextElementSibling;
-      const chev = btn.querySelector('.chev');
-      const isOpen = body.classList.contains('open');
-      document.querySelectorAll('.accordion-body.open').forEach(b => { if (b !== body) { b.classList.remove('open'); } });
-      document.querySelectorAll('.chev.open').forEach(c => { if (c !== chev) c.classList.remove('open'); });
-      body.classList.toggle('open', !isOpen);
-      chev.classList.toggle('open', !isOpen);
-    });
-  });
-
-  // ---------- footer: copy link + back to top ----------
-  document.getElementById('shareBtn').addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      showToast('Link copied to clipboard');
-    } catch {
-      showToast('Copy this page\'s URL from your address bar');
-    }
-  });
-  document.getElementById('topBtn').addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
-
-  // ---------- scroll-reveal for lower sections ----------
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('in');
-        io.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.15 });
-  document.querySelectorAll('.sr').forEach(el => io.observe(el));
-
-  // ---------- v2: doodles, progress, count-up, demo player, mascot ----------
-  (function(){
-    const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const C = ['#FBAEBE','#3B82F6','#A7F3D0','#FCD34D','#FF5C5C'];
-    const S = (b,f)=>`<svg viewBox="0 0 32 32" width="100%" height="100%" fill="${f}" stroke="#111827" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">${b}</svg>`;
-    const shapes = [
-      f=>S('<path d="M16 2l3.5 10.5L30 16l-10.5 3.5L16 30l-3.5-10.5L2 16l10.5-3.5z"/>',f),
-      f=>S('<path d="M16 28C5 20 3 13 7 8.5 10.5 5 15 6.5 16 10c1-3.5 5.5-5 9-1.5C29 13 27 20 16 28z"/>',f),
-      f=>S('<path d="M9 25a6 6 0 0 1-.5-12A8 8 0 0 1 24 11.500a6.500 6.500 0 0 1 0 13.500z"/>',f),
-      f=>S('<circle cx="16" cy="16" r="10" fill="none" stroke-width="5"/>',f),
-      f=>S('<path d="M16 5v22M5 16h22" fill="none" stroke-width="4.5"/>',f),
-      f=>S('<path d="M3 16c3-8 6-8 9 0s6 8 9 0 6-8 8-2" fill="none" stroke-width="3"/>',f),
-      f=>S('<circle cx="16" cy="7" r="5.500"/><circle cx="25" cy="16" r="5.500"/><circle cx="16" cy="25" r="5.500"/><circle cx="7" cy="16" r="5.500"/><circle cx="16" cy="16" r="4" fill="#FCD34D"/>',f)
-    ];
-    const box = document.getElementById('doodles'), items = [];
-    let seed = 7; const rnd = ()=> (seed = (seed*9301+49297)%233280)/233280;
-    for (let i=0;i<22;i++){
-      const el = document.createElement('div'), s = 26+Math.round(rnd()*26);
-      el.className='dd';
-      el.style.cssText=`width:${s}px;height:${s}px;top:${3+i*4.4}%;left:${i%2?86+rnd()*10:2+rnd()*9}%`;
-      el.innerHTML=`<div style="--d:${5+rnd()*5}s;--l:-${rnd()*5}s;--r:${Math.round(rnd()*40-20)}deg">${shapes[i%shapes.length](C[i%C.length])}</div>`;
-      box.appendChild(el); items.push([el,(rnd()-.5)*.16]);
-    }
-    const prog = document.getElementById('prog'); let tick=false;
-    function onScroll(){
-      if (tick) return; tick=true;
-      requestAnimationFrame(()=>{
-        const y=scrollY, max=document.documentElement.scrollHeight-innerHeight;
-        prog.style.width=(max>0?y/max*100:0)+'%';
-        if(!RM) items.forEach(([el,k])=>el.style.transform=`translate3d(0,${-y*k}px,0)`);
-        tick=false;
-      });
-    }
-    addEventListener('scroll',onScroll,{passive:true}); onScroll();
-
-    // count-up
-    const co = new IntersectionObserver(es=>es.forEach(e=>{
-      if(!e.isIntersecting) return; co.unobserve(e.target);
-      const n=+e.target.dataset.count, t0=performance.now();
-      (function step(t){const k=Math.min((t-t0)/900,1);e.target.textContent=Math.round(n*k);if(k<1&&!RM)requestAnimationFrame(step);else e.target.textContent=n;})(t0);
-    }),{threshold:.6});
-    document.querySelectorAll('[data-count]').forEach(el=>co.observe(el));
-
-    // demo player: state is a pure function of time t
-    const D=12000, Q='Is Rust worth learning this year?';
-    const dq=document.getElementById('dq'), dbtn=document.getElementById('dbtn'), dwait=document.getElementById('dwait'),
-          dsum=document.getElementById('dsum'), dbar=document.getElementById('dbar'), dtime=document.getElementById('dtime'),
-          cards=[...document.querySelectorAll('.dcard')], playBtn=document.getElementById('playBtn'),
-          playIcon=document.getElementById('playIcon'), dtrack=document.getElementById('dtrack');
-    const show=(el,on)=>{el.style.opacity=on?1:0;el.style.transform=on?'none':'translateY(14px) scale(.96)';};
-    function render(t){
-      dq.textContent=Q.slice(0,Math.min(Q.length,Math.max(0,Math.floor((t-400)/70))));
-      dbtn.classList.toggle('pressed',t>3000&&t<3400);
-      dwait.style.opacity=t>3200&&t<4700?1:0;
-      cards.forEach((c,i)=>show(c,t>4400+i*350));
-      show(dsum,t>7800);
-      dbar.style.width=(t/D*100)+'%';
-      dtime.textContent='0:'+String(Math.floor(t/1000)).padStart(2,'0');
-      dtrack.setAttribute('aria-valuenow',Math.floor(t/1000));
-    }
-    let t=RM?D:0, playing=!RM, vis=false, last=performance.now();
-    render(t);
-    new IntersectionObserver(es=>vis=es[0].isIntersecting).observe(document.getElementById('demo'));
-    (function loop(now){
-      if(playing&&vis){t+=Math.min(now-last,60); if(t>D+2500)t=0; render(Math.min(t,D));}
-      last=now; requestAnimationFrame(loop);
-    })(last);
-    playBtn.addEventListener('click',()=>{
-      playing=!playing;
-      playIcon.setAttribute('d',playing?'M7 5h3v14H7zM14 5h3v14h-3z':'M8 5l11 7-11 7z');
-      playBtn.setAttribute('aria-label',playing?'Pause demo':'Play demo');
-    });
-    dtrack.addEventListener('click',e=>{const r=dtrack.getBoundingClientRect();t=Math.max(0,Math.min(.999,(e.clientX-r.left)/r.width))*D;render(t);});
-
-    // mascot eyes + CTA
-    const eyes=[...document.querySelectorAll('#mascot .eye')];
-    addEventListener('pointermove',e=>eyes.forEach(g=>{
-      const r=g.firstElementChild.getBoundingClientRect(), a=Math.atan2(e.clientY-(r.top+r.height/2),e.clientX-(r.left+r.width/2));
-      g.lastElementChild.style.transform=`translate(${Math.cos(a)*6}px,${Math.sin(a)*6}px)`;
-    }),{passive:true});
-    document.getElementById('mascot').addEventListener('click',()=>showToast('Boop! Ask me anything.'));
-    document.getElementById('ctaBtn').addEventListener('click',()=>{
-      document.getElementById('signup').scrollIntoView({behavior:'smooth'});
-      setTimeout(()=>document.getElementById('askInput').focus({preventScroll:true}),500);
-    });
-  })();
-
-  // ---------- hero scene loop ----------
-  (function(){
-    const els=[...document.querySelectorAll('.say')]; if(!els.length) return;
-    if(matchMedia('(prefers-reduced-motion: reduce)').matches){els.forEach(e=>e.classList.add('on'));return;}
-    function run(){
-      els.forEach((e,i)=>setTimeout(()=>e.classList.add('on'),500+i*300+(i===els.length-1?600:0)));
-      setTimeout(()=>els.forEach(e=>e.classList.remove('on')),8000);
-    }
-    run(); setInterval(run,9500);
-  })();
-</script>
-</body>
-</html>
+const $=id=>document.getElementById(id),RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const M=['Perplexity','ChatGPT','Gemini','Claude','Grok','Copilot','Kimi','Meta AI'];
+const ID={'Perplexity':'perplexity','ChatGPT':'chatgpt','Gemini':'gemini','Claude':'claude','Grok':'grok','Copilot':'copilot','Kimi':'kimi','Meta AI':'metaai'};
+// build repeated markup
+$('lanes').innerHTML=M.map((m,i)=>`<div class="lane"><span>${m}</span><div class="t"><i style="--d:${(5+((i*7)%5)*.7).toFixed(1)}s;animation-delay:-${(i*.9).toFixed(1)}s"></i></div><em>${(1.2+((i*5)%7)*.4).toFixed(1)}s</em></div>`).join('');
+$('tk').innerHTML=[...M,...M,...M,...M].map(m=>`<span>${m}</span>`).join('');
+$('modelToggles').innerHTML=M.map(m=>`<button data-model="on" class="model-toggle">${m} ✓</button>`).join('');
+document.querySelector('.viz.b').innerHTML=[90,60,80,70,95,55,75,85].map((h,i)=>`<i style="height:${h}%;animation-delay:${i*.3}s"></i>`).join('');
+// menu / toast
+$('menuToggle').onclick=()=>{const o=$('mobileNav').classList.toggle('open');$('menuToggle').setAttribute('aria-expanded',o)};
+$('mobileNav').querySelectorAll('a').forEach(a=>a.onclick=()=>$('mobileNav').classList.remove('open'));
+function showToast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(showToast._t);showToast._t=setTimeout(()=>t.classList.remove('show'),2200)}
+const focusAsk=()=>{$('signup').scrollIntoView({behavior:'smooth'});setTimeout(()=>$('askInput').focus({preventScroll:true}),450)};
+$('askAiTopBtn').onclick=focusAsk;$('ctaBtn').onclick=focusAsk;
+// ask form (backend unchanged)
+const form=$('askForm'),panel=$('resultsPanel');
+const active=()=>[...document.querySelectorAll('.model-toggle')].filter(b=>b.dataset.model==='on').map(b=>ID[b.textContent.replace(' ✓','').trim()]).filter(Boolean);
+form.addEventListener('submit',async e=>{e.preventDefault();const q=$('askInput').value.trim();
+ if(!q){$('askError').classList.remove('hidden');form.classList.add('shake');setTimeout(()=>form.classList.remove('shake'),400);$('askInput').focus();return}
+ $('askError').classList.add('hidden');const ids=active();$('askBtnLabel').textContent='Asking…';$('askBtn').disabled=true;
+ panel.classList.remove('hidden');panel.innerHTML='<div class="note-box">Asking every model <span><span class="dot"></span><span class="dot"></span><span class="dot"></span></span></div>';
+ try{const r=await fetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,models:ids.length?ids:null})});
+  if(!r.ok){const er=await r.json().catch(()=>({}));throw new Error(er.error||'Request failed')}
+  const s=await r.json();location.href='/chat.html?id='+encodeURIComponent(s.id)}
+ catch(err){panel.innerHTML='<div class="note-box">Something went wrong: '+(err.message||'please try again').replace(/</g,'&lt;')+'</div>';$('askBtnLabel').textContent='Ask';$('askBtn').disabled=false}});
+document.querySelectorAll('.model-toggle').forEach(b=>b.onclick=()=>{const on=b.dataset.model==='on';b.dataset.model=on?'off':'on';b.textContent=b.textContent.replace(' ✓','')+(on?'':' ✓')});
+// agreement explorer
+const EX=[
+ {q:'Is Rust worth learning this year?',s:'yyymyymm',n:['Systems work','Command-line start','Depends on goal','Memory safety','Bumpy first month','Small script','Strict compiler','Check your team'],sum:'Most say yes for systems work and split on how rough the first month is.'},
+ {q:'Should I buy or lease a car?',s:'mmymnmym',n:['Depends on miles','Depends on budget','Buy if long term','Compare total cost','Lease is cheaper now','Run the numbers','Buy and keep','Depends on credit'],sum:'No consensus. Mileage and how long you keep the car decide it.'},
+ {q:'Is intermittent fasting effective?',s:'mmmymnmm',n:['Mixed evidence','Works for some','Depends on diet','Modest results','Not magic','Talk to a doctor','Calories still count','Varies by person'],sum:'Models lean cautious. Results vary, so treat it as one option among several.'}];
+const col={y:'#000',m:'#FBAEBE',n:'#fff'};
+$('chips').innerHTML=EX.map((x,i)=>`<button class="chip" aria-pressed="${i==0}" data-i="${i}">${x.q}</button>`).join('');
+$('grid8').innerHTML=M.map(m=>`<div class="sq"><span>${m}</span><small></small></div>`).join('');
+function pick(i){const x=EX[i];document.querySelectorAll('.chip').forEach((c,j)=>c.setAttribute('aria-pressed',j==i));
+ document.querySelectorAll('.sq').forEach((s,j)=>{s.dataset.s=x.s[j];s.lastChild.textContent=x.n[j]});
+ $('meter').innerHTML=['y','m','n'].map(k=>`<i style="width:${[...x.s].filter(c=>c==k).length/8*100}%;background:${col[k]};${k!='n'?'border-right:2px solid #000':''}"></i>`).join('');$('exSum').textContent=x.sum}
+$('chips').onclick=e=>{const c=e.target.closest('.chip');if(c)pick(+c.dataset.i)};pick(0);
+// accordion
+document.querySelectorAll('.bt').forEach(b=>b.onclick=()=>{const body=b.nextElementSibling,ch=b.querySelector('.chev'),o=body.classList.contains('open');
+ document.querySelectorAll('.ab.open').forEach(x=>x.classList.remove('open'));document.querySelectorAll('.chev.open').forEach(x=>x.classList.remove('open'));
+ body.classList.toggle('open',!o);ch.classList.toggle('open',!o)});
+$('shareBtn').onclick=async()=>{try{await navigator.clipboard.writeText(location.href);showToast('Link copied to clipboard')}catch{showToast("Copy this page's URL from your address bar")}};
+$('topBtn').onclick=()=>scrollTo({top:0,behavior:'smooth'});
+// reveal + count-up
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;e.target.classList.add('in');io.unobserve(e.target);
+ e.target.querySelectorAll('[data-n]').forEach(el=>{const n=+el.dataset.n,t0=performance.now();(function s(t){const k=Math.min((t-t0)/900,1);el.textContent=Math.round(n*k);if(k<1&&!RM)requestAnimationFrame(s);else el.textContent=n})(t0)})}),{threshold:.2});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+// progress bar
+let tk=false;addEventListener('scroll',()=>{if(tk)return;tk=true;requestAnimationFrame(()=>{const m=document.documentElement.scrollHeight-innerHeight;$('prog').style.width=(m>0?scrollY/m*100:0)+'%';tk=false})},{passive:true});
+// demo player
+const D=12000,Q='Is Rust worth learning this year?',T=['Yes for systems work, with demand rising.','Yes. Start with a small command-line project.','Depends on your goal; weigh web against systems.','Yes, if memory safety matters to you.','Yes, but expect a bumpy first month.','Yes. Try it on a small script you already have.','Yes, if you enjoy a strict compiler.','Maybe. Check whether your team uses it.'];
+$('dgrid').innerHTML=M.map((m,i)=>`<div class="dcard"><p class="who">${m}</p><p class="t">${T[i]}</p></div>`).join('');
+const cards=[...document.querySelectorAll('.dcard')],show=(el,on)=>{el.style.opacity=on?1:0;el.style.transform=on?'none':'translateY(10px)'};
+function render(t){$('dq').textContent=Q.slice(0,Math.min(Q.length,Math.max(0,Math.floor((t-400)/70))));$('dbtn').classList.toggle('pressed',t>3000&&t<3400);
+ $('dwait').style.opacity=t>3200&&t<4700?1:0;cards.forEach((c,i)=>show(c,t>4400+i*350));show($('dsum'),t>7800);
+ $('dbar').style.width=t/D*100+'%';$('dtime').textContent='0:'+String(Math.floor(t/1000)).padStart(2,'0');$('dtrack').setAttribute('aria-valuenow',Math.floor(t/1000))}
+let t=RM?D:0,playing=!RM,vis=false,last=performance.now();render(t);
+new IntersectionObserver(e=>vis=e[0].isIntersecting).observe($('demo'));
+(function loop(now){if(playing&&vis){t+=Math.min(now-last,60);if(t>D+2500)t=0;render(Math.min(t,D))}last=now;requestAnimationFrame(loop)})(last);
+$('playBtn').onclick=()=>{playing=!playing;$('playIcon').setAttribute('d',playing?'M7 5h3v14H7zM14 5h3v14h-3z':'M8 5l11 7-11 7z');$('playBtn').setAttribute('aria-label',playing?'Pause demo':'Play demo')};
+$('dtrack').onclick=e=>{const r=$('dtrack').getBoundingClientRect();t=Math.max(0,Math.min(.999,(e.clientX-r.left)/r.width))*D;render(t)};
+</script></body></html>
