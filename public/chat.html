@@ -1,143 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Remagine — Chat</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        fontFamily: { sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'] },
-        colors: {
-          brandPink: '#FBAEBE', brandBlue: '#3B82F6', brandMint: '#A7F3D0',
-          brandCoral: '#FF5C5C', brandYellow: '#FCD34D'
-        }
-      }
-    }
-  };
-</script>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>Remagine · Chat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet"/>
 <style>
-  body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background:#fff; color:#111827; }
-  .crisp-border-thick { border: 2.5px solid #111827; }
-  .dot { animation: dotPulse 1.1s ease-in-out infinite; }
-  .dot:nth-child(2) { animation-delay: .15s; }
-  .dot:nth-child(3) { animation-delay: .3s; }
-  @keyframes dotPulse { 0%,100%{opacity:.25;transform:translateY(0)} 50%{opacity:1;transform:translateY(-3px)} }
-  .reveal { opacity:0; transform:translateY(10px); animation: revealIn .45s ease forwards; }
-  @keyframes revealIn { to { opacity:1; transform:translateY(0); } }
-</style>
-</head>
-<body class="min-h-screen flex flex-col">
+:root{--pk:#FBAEBE;--grey:#5c5c5c;--soft:#f2f2f2;--line:2px solid #000;--pad:clamp(18px,4vw,48px)}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{font:17px/1.5 'Archivo',system-ui,Arial,sans-serif;background:#fff;color:#000;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
+::selection{background:var(--pk)}a{color:inherit}button,input{font:inherit;color:inherit;border-radius:0}button{cursor:pointer;background:none;border:0}
+:focus-visible{outline:3px solid #000;outline-offset:2px}.wrap{max-width:1100px;margin:0 auto;padding:0 var(--pad);width:100%}.hidden{display:none!important}.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.btn{min-height:44px;background:#000;color:#fff;border:var(--line);padding:10px 22px;font-weight:800;font-size:.95rem;text-decoration:none;white-space:nowrap;transition:.12s;display:inline-flex;align-items:center}
+.btn:hover{background:var(--pk);color:#000}.btn:active{transform:translateY(2px)}.btn.ghost{background:#fff;color:#000}.btn.ghost:hover{background:var(--pk)}
+header{position:sticky;top:0;z-index:40;background:#fff;border-bottom:var(--line)}.bar{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{font-weight:900;font-size:1.5rem;letter-spacing:-.04em;text-decoration:none}.nav{display:flex;align-items:center;gap:clamp(14px,3vw,32px)}
+.nav a:not(.btn){font-weight:700;font-size:.95rem;text-decoration:none;border-bottom:2px solid transparent}.nav a:not(.btn):hover{border-color:#000}
+h1{font-weight:900;font-stretch:80%;letter-spacing:-.045em;line-height:.92}
+main{flex:1;padding:clamp(32px,6vw,80px) 0 clamp(48px,8vw,96px)}
+.legal{border-top:var(--line);padding:18px 0 max(24px,env(safe-area-inset-bottom));font-size:.85rem;color:var(--grey)}
+.dot{display:inline-block;width:8px;height:8px;background:#000;margin-left:4px;animation:dp 1.1s infinite}.dot:nth-child(3){animation-delay:.15s}.dot:nth-child(4){animation-delay:.3s}@keyframes dp{50%{opacity:.2}}
+.box{border:var(--line);padding:clamp(20px,4vw,36px);font-weight:700}
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
+@media(max-width:600px){body{font-size:16px}.bar{height:56px}.logo{font-size:1.35rem}.nav .hide-s{display:none}}
 
-<header class="w-full border-b border-gray-900 bg-white/90 backdrop-blur sticky top-0 z-40">
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-    <a class="flex items-center gap-1.5" href="/">
-      <span class="text-xl font-extrabold tracking-tight text-gray-950">Remagine</span>
-    </a>
-    <nav class="flex items-center gap-4 text-sm font-semibold text-gray-700">
-      <a class="hover:text-black" href="/history.html">All chats</a>
-      <a class="hover:text-black" href="/">Ask another</a>
-    </nav>
-  </div>
-</header>
-
-<main class="flex-1 w-full max-w-4xl mx-auto px-4 sm:px-6 py-10">
-
-  <div id="loadingState" class="hidden">
-    <div class="crisp-border-thick rounded-2xl p-6 bg-white text-center">
-      <p class="text-sm font-semibold text-gray-700">Loading this chat
-        <span class="inline-flex gap-1 align-middle ml-1">
-          <span class="dot inline-block w-1.5 h-1.5 rounded-full bg-gray-700"></span>
-          <span class="dot inline-block w-1.5 h-1.5 rounded-full bg-gray-700"></span>
-          <span class="dot inline-block w-1.5 h-1.5 rounded-full bg-gray-700"></span>
-        </span>
-      </p>
-    </div>
-  </div>
-
-  <div id="errorState" class="hidden">
-    <div class="crisp-border-thick rounded-2xl p-6 bg-white text-center">
-      <p class="text-sm font-semibold text-brandCoral" id="errorMsg">Couldn't find that chat.</p>
-      <a href="/" class="inline-block mt-4 px-5 py-2 rounded-full border-2 border-gray-950 bg-brandPink text-sm font-bold">Ask a new question</a>
-    </div>
-  </div>
-
-  <div id="chatContent" class="hidden">
-    <p class="text-xs font-bold text-gray-500 mb-2" id="chatDate"></p>
-    <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-950 leading-snug" id="chatQuestion"></h1>
-
-    <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4" id="answerCards"></div>
-
-    <div class="reveal mt-6 rounded-2xl p-5 bg-[#FFF5F3] border-[2.5px] border-gray-950">
-      <p class="text-xs font-extrabold tracking-wide text-gray-700">Summary</p>
-      <p class="mt-2 text-sm text-gray-900 leading-relaxed" id="chatSummary"></p>
-    </div>
-
-    <div class="mt-8 flex justify-center">
-      <a href="/" class="press-btn px-6 py-2.5 rounded-full border-2 border-gray-950 bg-brandPink text-sm font-bold text-gray-950">Ask another question</a>
-    </div>
-  </div>
-
-</main>
-
+.meta{font-weight:700;font-size:.9rem;color:var(--grey)}
+h1{margin-top:12px;font-size:clamp(2.2rem,7vw,5.5rem);letter-spacing:-.04em;line-height:.98;overflow-wrap:anywhere;max-width:20ch;animation:up .6s both}
+.count{margin-top:28px;display:flex;justify-content:space-between;font-weight:800;font-size:.9rem;border-bottom:var(--line);padding-bottom:10px}
+#answerCards{display:grid;grid-template-columns:repeat(2,1fr);border-left:var(--line)}
+.card{border-right:var(--line);border-bottom:var(--line);padding:clamp(18px,3vw,28px);animation:up .5s both;transition:background .2s}.card:hover{background:var(--soft)}
+.card .no{font-size:.8rem;font-weight:800;color:var(--grey)}.card h3{margin-top:2px;font-weight:900;font-stretch:80%;font-size:1.5rem;letter-spacing:-.03em}.card p.tx{margin-top:10px;font-size:.98rem;line-height:1.55}
+.sum{margin-top:clamp(24px,4vw,40px);border:var(--line);background:var(--pk);padding:clamp(20px,4vw,40px);animation:up .6s .5s both}
+.sum h2{font-weight:800;font-size:.9rem}.sum p{margin-top:10px;font-weight:700;font-size:clamp(1.2rem,2.6vw,1.9rem);letter-spacing:-.02em;line-height:1.25;max-width:40ch}
+.acts{margin-top:28px;display:flex;gap:12px;flex-wrap:wrap}
+#toast{position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom));z-index:50;background:#000;color:#fff;padding:12px 22px;font-weight:700;font-size:.9rem;outline:2px solid #fff;transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:.25s}#toast.show{transform:translate(-50%,0);opacity:1}
+@media(max-width:700px){#answerCards{grid-template-columns:1fr}.acts .btn{flex:1;justify-content:center}#toast{width:calc(100% - 36px);text-align:center}}
+@media(hover:none){.card:hover{background:none}}
+</style></head>
+<body>
+<header><div class="wrap bar"><a class="logo" href="/">Remagine</a><div class="nav"><a class="hide-s" href="/history.html">All chats</a><a class="btn" href="/">Ask AI</a></div></div></header>
+<main><div class="wrap">
+<div id="loadingState" class="hidden"><div class="box">Loading this chat <span><span class="dot"></span><span class="dot"></span><span class="dot"></span></span></div></div>
+<div id="errorState" class="hidden"><div class="box"><p id="errorMsg">Could not find that chat.</p><a href="/" class="btn" style="margin-top:20px">Ask a new question</a></div></div>
+<div id="chatContent" class="hidden">
+<p class="meta" id="chatDate"></p><h1 id="chatQuestion"></h1>
+<div class="count"><span id="countLabel"></span><span>Side by side</span></div>
+<div id="answerCards"></div>
+<div class="sum"><h2>Summary</h2><p id="chatSummary"></p></div>
+<div class="acts"><a href="/" class="btn">Ask another question</a><button id="copyBtn" class="btn ghost">Copy summary</button><a href="/history.html" class="btn ghost">All chats</a></div>
+</div></div></main>
+<div id="toast" role="status"></div>
+<footer><div class="wrap"><p class="legal">© 2026 Remagine. One question, every model's answer, one clear summary.</p></div></footer>
 <script>
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get('id');
-  const loadingState = document.getElementById('loadingState');
-  const errorState = document.getElementById('errorState');
-  const chatContent = document.getElementById('chatContent');
-
-  function show(el) { el.classList.remove('hidden'); }
-  function hide(el) { el.classList.add('hidden'); }
-
-  async function load() {
-    if (!id) {
-      document.getElementById('errorMsg').textContent = 'No chat id was given.';
-      show(errorState);
-      return;
-    }
-    show(loadingState);
-    try {
-      const res = await fetch(`/api/session/${encodeURIComponent(id)}`);
-      if (!res.ok) throw new Error('Chat not found');
-      const session = await res.json();
-      render(session);
-    } catch (err) {
-      document.getElementById('errorMsg').textContent = 'That chat could not be loaded — it may have expired.';
-      hide(loadingState);
-      show(errorState);
-    }
+const id=new URLSearchParams(location.search).get('id');
+const loadingState=document.getElementById('loadingState'),errorState=document.getElementById('errorState'),chatContent=document.getElementById('chatContent');
+const show=el=>el.classList.remove('hidden'),hide=el=>el.classList.add('hidden');
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(showToast._t);showToast._t=setTimeout(()=>t.classList.remove('show'),2200)}
+async function load(){
+  if(!id){document.getElementById('errorMsg').textContent='No chat id was given.';show(errorState);return}
+  show(loadingState);
+  try{
+    const res=await fetch(`/api/session/${encodeURIComponent(id)}`);
+    if(!res.ok)throw new Error('Chat not found');
+    render(await res.json());
+  }catch(err){
+    document.getElementById('errorMsg').textContent='That chat could not be loaded. It may have expired.';
+    hide(loadingState);show(errorState);
   }
-
-  function render(session) {
-    document.title = `Remagine — ${session.question}`;
-    document.getElementById('chatDate').textContent = new Date(session.createdAt).toLocaleString();
-    document.getElementById('chatQuestion').textContent = session.question;
-
-    const cards = session.answers.map(a => `
-      <div class="reveal rounded-xl p-4 border-2 ${a.color || 'border-gray-900'} bg-white">
-        <p class="text-xs font-extrabold tracking-wide text-gray-500">${escapeHtml(a.name)}</p>
-        <p class="mt-1.5 text-sm text-gray-800 leading-relaxed">${escapeHtml(a.text)}</p>
-      </div>`).join('');
-    document.getElementById('answerCards').innerHTML = cards;
-    document.getElementById('chatSummary').textContent = session.summary;
-
-    hide(loadingState);
-    show(chatContent);
-  }
-
-  function escapeHtml(str) {
-    return String(str).replace(/[&<>"']/g, c => ({
-      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-    }[c]));
-  }
-
-  load();
+}
+function render(session){
+  document.title=`Remagine · ${session.question}`;
+  document.getElementById('chatDate').textContent=new Date(session.createdAt).toLocaleString();
+  document.getElementById('chatQuestion').textContent=session.question;
+  document.getElementById('countLabel').textContent=session.answers.length+' answers';
+  document.getElementById('answerCards').innerHTML=session.answers.map((a,i)=>`<div class="card" style="animation-delay:${i*70}ms"><p class="no">${String(i+1).padStart(2,'0')}</p><h3>${escapeHtml(a.name)}</h3><p class="tx">${escapeHtml(a.text)}</p></div>`).join('');
+  document.getElementById('chatSummary').textContent=session.summary;
+  document.getElementById('copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText(session.summary);showToast('Summary copied')}catch{showToast('Select the summary text to copy it')}};
+  hide(loadingState);show(chatContent);
+}
+load();
 </script>
-</body>
-</html>
+</body></html>
